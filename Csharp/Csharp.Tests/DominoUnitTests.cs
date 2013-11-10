@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Csharp.Tests
@@ -15,10 +16,20 @@ namespace Csharp.Tests
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
-            var juego = new Csharp.JuegoDomino();
+            var juego = new JuegoDomino();
             juego.JugarFicha(Jugadores.Primero, new Ficha(6, 6));
 
-            Assert.IsTrue(juego != null);
+            Assert.IsNotNull(juego);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ElJuegoDebeComenzarConUnDoble()
+        {
+            var juego = new JuegoDomino();
+            juego.JugarFicha(Jugadores.Primero, new Ficha(3, 4));
+
+            Assert.IsNull(juego.Fichas);
         }
     }
 }

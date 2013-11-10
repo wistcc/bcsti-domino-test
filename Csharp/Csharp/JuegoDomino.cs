@@ -15,7 +15,10 @@ namespace Csharp
 
         public void JugarFicha(Jugadores jugador, Ficha ficha)
         {
-            Fichas = ficha; 
+            if (ficha.Valor.A == ficha.Valor.B)
+                Fichas = ficha;
+            else
+                throw new ArgumentException("El juego debe comenzar con un doble!");
         }
     }
 }
