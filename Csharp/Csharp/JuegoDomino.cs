@@ -15,10 +15,31 @@ namespace Csharp
 
         public void JugarFicha(Jugadores jugador, Ficha ficha)
         {
-            if (ficha.Valor.A == ficha.Valor.B)
-                Fichas = ficha;
+
+            if (Fichas == null)
+            {
+                //Quiere decir que nunca se ha jugado
+                if (ficha.Valor.A == ficha.Valor.B)
+                    Fichas = ficha;
+                else
+                    throw new ArgumentException("El juego debe comenzar con un doble!");
+            }
             else
-                throw new ArgumentException("El juego debe comenzar con un doble!");
+            {
+                //Quiere decir que ya se ha jugado, permito anexar una nueva
+
+                if (Fichas.Valor.A == ficha.Valor.A || Fichas.Valor.A == ficha.Valor.B)
+                {
+                    Fichas.Siguiente = ficha;
+                }
+                else if (Fichas.Valor.B == ficha.Valor.A || Fichas.Valor.B == ficha.Valor.B)
+                {
+                    Fichas.Anterior = ficha;
+                }
+
+            }
+
+            
         }
     }
 }

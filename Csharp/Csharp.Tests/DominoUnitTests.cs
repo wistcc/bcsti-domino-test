@@ -31,5 +31,27 @@ namespace Csharp.Tests
 
             Assert.IsNull(juego.Fichas);
         }
+
+        [TestMethod]
+        public void SePuedeJugarUnaFichaNueva()
+        {
+            var juego = new JuegoDomino();
+            juego.JugarFicha(Jugadores.Primero, new Ficha(6,6)); //Primera
+            juego.JugarFicha(Jugadores.Segundo, new Ficha(6,0)); //Segunda
+
+            Assert.IsTrue(juego.Fichas.Anterior != null || juego.Fichas.Siguiente != null);
+        }
+
+        [TestMethod]
+        public void SoloSePuedeJugarUnNumeroComunEnTablero()
+        {
+            var juego = new JuegoDomino();
+            juego.JugarFicha(Jugadores.Primero, new Ficha(5,5));
+            juego.JugarFicha(Jugadores.Segundo, new Ficha(4,3));
+
+            Assert.IsNull(juego.Fichas.Siguiente);
+            Assert.IsNull(juego.Fichas.Anterior);
+        }
+
     }
 }
