@@ -45,7 +45,6 @@
     <Compile Include="Frentes.cs" />
     <Compile Include="JuegoDomino.cs" />
     <Compile Include="Jugador.cs" />
-    <Compile Include="Jugadores.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

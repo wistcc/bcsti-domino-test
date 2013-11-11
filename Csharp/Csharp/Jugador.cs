@@ -17,5 +17,10 @@ namespace Csharp
         {
             this.Fichas = new List<Ficha>();
         }
+
+        public bool PoseeFicha(Ficha ficha)
+        {
+            return Fichas.Contains(ficha);
+        }
     }
 }

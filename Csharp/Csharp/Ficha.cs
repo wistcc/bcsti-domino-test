@@ -9,6 +9,7 @@ namespace Csharp
     /// </summary>
     public class Ficha
     {
+
         public struct ValorFicha
         {
             public int A;
@@ -74,6 +75,12 @@ namespace Csharp
         public override string ToString()
         {
             return String.Format("[{0},{1}]", Valor.A, Valor.B);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var chequeoFicha = obj as Ficha;
+            return chequeoFicha != null && (Valor.Equals(chequeoFicha.Valor));
         }
     }
 }

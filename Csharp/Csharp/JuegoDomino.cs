@@ -18,6 +18,7 @@ namespace Csharp
         public JuegoDomino()
         {
             Jugadores = new List<Jugador>();
+            Fichas = new List<Ficha>();
 
             //Se crean todas las fichas posibles
             var fichasPosibles = new List<Ficha>();
@@ -44,17 +45,19 @@ namespace Csharp
 
         }
 
-        public void JugarFicha(Jugadores jugador, Ficha ficha)
+        public void JugarFicha(Jugador jugador, Ficha ficha)
         {
+            if (!jugador.PoseeFicha(ficha))
+            {
+                return;
+                //throw new ArgumentException("El jugador no puede jugar con fichas que no posee");
+            }
+
             if (Fichas == null)
             {
                 //Quiere decir que nunca se ha jugado. Se instancia la lista y comienza el juego
-                if (ficha.Valor.A == ficha.Valor.B)
-                {
-                    Fichas = new List<Ficha> {ficha};
-                }
-                else
-                    throw new ArgumentException("El juego debe comenzar con un doble!");
+                Fichas = new List<Ficha> { ficha };
+               
             }
             else
             {
@@ -79,6 +82,12 @@ namespace Csharp
                     Fichas.Add(ficha);
                 }
             }
+        }
+
+        public void JugarFicha(int numeroJugador, Ficha ficha)
+        {
+            if (numeroJugador >= 0 && numeroJugador < 4)
+                JugarFicha(Jugadores[numeroJugador], ficha);
         }
 
         public string DibujarTablero(Ficha ficha = null)
