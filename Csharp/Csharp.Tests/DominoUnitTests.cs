@@ -75,9 +75,20 @@ namespace Csharp.Tests
             juego.JugarFicha(Jugadores.Segundo, new Ficha(6, 0));
             juego.JugarFicha(Jugadores.Tercero, new Ficha(0, 2));
             juego.JugarFicha(Jugadores.Cuarto, new Ficha(5, 2));
-
+            
             juego.JugarFicha(Jugadores.Primero, new Ficha(6,0));
             Assert.AreEqual(4, juego.Fichas.Count);
+        }
+
+        [TestMethod]
+        public void LosJugadoresTienenFichasAsignadasAlComenzarElJuego()
+        {
+            var juego = new JuegoDomino();
+
+            Assert.AreEqual(7, juego.Jugadores[0].Fichas.Count);
+            Assert.AreEqual(7, juego.Jugadores[1].Fichas.Count);
+            Assert.AreEqual(7, juego.Jugadores[2].Fichas.Count);
+            Assert.AreEqual(7, juego.Jugadores[3].Fichas.Count);
         }
     }
 }

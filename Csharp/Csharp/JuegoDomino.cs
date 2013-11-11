@@ -13,6 +13,37 @@ namespace Csharp
     {
         public List<Ficha> Fichas { get; set; }
 
+        public List<Jugador> Jugadores { get; set; } 
+
+        public JuegoDomino()
+        {
+            Jugadores = new List<Jugador>();
+
+            //Se crean todas las fichas posibles
+            var fichasPosibles = new List<Ficha>();
+            for (var i = 0; i < 7; i++)
+            {
+                for (var j = i; j < 7; j++)
+                {
+                    fichasPosibles.Add(new Ficha(i,j));
+                }
+            }
+
+            //Se reparten entre los jugadores
+            fichasPosibles = fichasPosibles.OrderBy(a => Guid.NewGuid()).ToList();
+
+            for (var i = 0; i < 4; i++)
+            {
+                var jugador = new Jugador();
+                for (int j = 0; j < 7; j++)
+                {
+                    jugador.Fichas.Add(fichasPosibles[i*7 + j]);
+                }
+                Jugadores.Add(jugador);
+            }
+
+        }
+
         public void JugarFicha(Jugadores jugador, Ficha ficha)
         {
             if (Fichas == null)
@@ -27,10 +58,9 @@ namespace Csharp
             }
             else
             {
-                foreach (var f in Fichas)
+                if (Fichas.Any(f => f.Valor.Equals(ficha.Valor)))
                 {
-                    if (f.Valor.Equals(ficha.Valor))
-                        throw new ArgumentException("No se puede jugar una ficha repetida");
+                    throw new ArgumentException("No se puede jugar una ficha repetida");
                 }
 
                 //Se buscan los extremos jugados en el tablero
@@ -48,7 +78,6 @@ namespace Csharp
 
                     Fichas.Add(ficha);
                 }
-
             }
         }
 

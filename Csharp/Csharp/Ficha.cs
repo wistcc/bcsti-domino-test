@@ -33,10 +33,8 @@ namespace Csharp
                     return (A == valor.A && B == valor.B) ||
                            (A == valor.B && B == valor.A) ;
                 }
-                else
-                {
-                    return false;
-                }
+                
+                return false;
             }
         }
 
@@ -71,6 +69,11 @@ namespace Csharp
         {
             return Valor.B == fichaPropuesta.Valor.A ||
                    Valor.B == fichaPropuesta.Valor.B;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("[{0},{1}]", Valor.A, Valor.B);
         }
     }
 }
