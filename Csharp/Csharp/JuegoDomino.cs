@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace Csharp
@@ -16,7 +17,7 @@ namespace Csharp
         {
             if (Fichas == null)
             {
-                //Quiere decir que nunca se ha jugado
+                //Quiere decir que nunca se ha jugado. Se instancia la lista y comienza el juego
                 if (ficha.Valor.A == ficha.Valor.B)
                 {
                     Fichas = new List<Ficha> {ficha};
@@ -26,8 +27,12 @@ namespace Csharp
             }
             else
             {
-                //Quiere decir que ya se ha jugado, permito anexar una nueva
-                
+                foreach (var f in Fichas)
+                {
+                    if (f.Valor.Equals(ficha.Valor))
+                        throw new ArgumentException("No se puede jugar una ficha repetida");
+                }
+
                 //Se buscan los extremos jugados en el tablero
                 if (Fichas.First().PuedeJugarA(ficha))
                 {
@@ -52,9 +57,9 @@ namespace Csharp
             if (Fichas == null)
                 return "No se ha jugado";
 
-            for (int i = 0; i < Fichas.Count; i++)
+            foreach (var f in Fichas)
             {
-                Trace.Write(Fichas[i].Valor);
+                Trace.Write(f.Valor);
             }
 
             return "";

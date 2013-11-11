@@ -24,6 +24,20 @@ namespace Csharp
             {
                 return String.Format("[{0},{1}]", A, B);
             }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ValorFicha)
+                {
+                    var valor = (ValorFicha)obj;
+                    return (A == valor.A && B == valor.B) ||
+                           (A == valor.B && B == valor.A) ;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         public ValorFicha Valor { get; set; }
@@ -37,6 +51,7 @@ namespace Csharp
         {
             Valor = new ValorFicha(Valor.B, Valor.A);
         }
+
 
         public bool PuedeJugar(Ficha fichaPropuesta)
         {

@@ -61,10 +61,23 @@ namespace Csharp.Tests
             juego.JugarFicha(Jugadores.Primero, new Ficha(6, 6));
             juego.JugarFicha(Jugadores.Segundo, new Ficha(6, 0));   
             juego.JugarFicha(Jugadores.Tercero, new Ficha(0,2)); 
-            juego.JugarFicha(Jugadores.Cuarto, new Ficha(2,5));
+            juego.JugarFicha(Jugadores.Cuarto, new Ficha(5,2 ));
 
             Assert.AreEqual(4, juego.Fichas.Count);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void NoSePuedeRepetirFichaYaJugada()
+        {
+            var juego = new JuegoDomino();
+            juego.JugarFicha(Jugadores.Primero, new Ficha(6, 6));
+            juego.JugarFicha(Jugadores.Segundo, new Ficha(6, 0));
+            juego.JugarFicha(Jugadores.Tercero, new Ficha(0, 2));
+            juego.JugarFicha(Jugadores.Cuarto, new Ficha(5, 2));
+
+            juego.JugarFicha(Jugadores.Primero, new Ficha(6,0));
+            Assert.AreEqual(4, juego.Fichas.Count);
+        }
     }
 }
