@@ -57,7 +57,7 @@ namespace Csharp
             {
                 //Quiere decir que nunca se ha jugado. Se instancia la lista y comienza el juego
                 Fichas = new List<Ficha> { ficha };
-               
+                jugador.Fichas.Remove(ficha);
             }
             else
             {
@@ -73,6 +73,7 @@ namespace Csharp
                         ficha.Voltear();
 
                     Fichas.Insert(0, ficha);
+                    jugador.Fichas.Remove(ficha);
                 }
                 else if (Fichas.Last().PuedeJugarB(ficha))
                 {
@@ -80,6 +81,7 @@ namespace Csharp
                         ficha.Voltear();
 
                     Fichas.Add(ficha);
+                    jugador.Fichas.Remove(ficha);
                 }
             }
         }

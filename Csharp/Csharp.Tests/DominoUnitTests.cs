@@ -126,9 +126,16 @@ namespace Csharp.Tests
 
         }
 
+        [TestMethod]
         public void CuandoJugadorPoneUnaFichaSeDebeQuitarDeSuColeccion()
         {
+            var juego = new JuegoDomino();
+            var primerJugador = juego.Jugadores[0];
+            primerJugador = new Jugador(6,0,6,6,5,4,4,4,1,2,3,0,2,3);
+
+            juego.JugarFicha(primerJugador, new Ficha(6,0));
             
+            Assert.AreEqual(6, primerJugador.Fichas.Count);
         }
 
         public void JugadorSoloPuedeJugarSiEsSuTurno()
