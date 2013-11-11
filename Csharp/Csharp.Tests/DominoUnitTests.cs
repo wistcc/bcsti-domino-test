@@ -18,8 +18,8 @@ namespace Csharp.Tests
         {
             var list = new List<Jugador>
             {
-                new Jugador(6,4, 6,6, 5,4, 4,4, 1,2, 3,0, 2,3),
-                new Jugador(3,4, 6,0, 0,0, 0,1, 0,2, 0,4, 0,5),
+                new Jugador(6,4, 6,6, 5,4, 4,4, 1,2, 3,0, 0,5),
+                new Jugador(3,4, 6,0, 0,0, 0,1, 0,2, 0,4, 3,2),
                 new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 1,5, 1,6),
                 new Jugador(2,2, 5,2, 2,6, 3,3, 3,5, 3,6, 5,5)
             };
@@ -133,11 +133,32 @@ namespace Csharp.Tests
             juego.JugarFicha(juego.Jugadores[0], new Ficha(4, 4));
         }
 
+        [TestMethod]
         public void JugadorPuedePasar()
-        {}
+        {
+            var juego = new JuegoDomino();
+            juego.Jugadores = InicializarJugadores();
 
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(3,0));
+            juego.JugarFicha(juego.Jugadores[1], new Ficha(3,2));
+            juego.JugarFicha(juego.Jugadores[2], new Ficha(2,0));
+            juego.PasarJuego(juego.Jugadores[3]);
+
+            Assert.AreEqual(0, juego.TurnoActual);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void JugadorNoPuedePasarConFichasDisponibles()
-        {}
+        {
+            var juego = new JuegoDomino();
+            juego.Jugadores = InicializarJugadores();
+
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
+            juego.JugarFicha(juego.Jugadores[1], new Ficha(0, 6));
+            juego.JugarFicha(juego.Jugadores[2], new Ficha(6, 1));
+            juego.PasarJuego(juego.Jugadores[3]);
+        }
 
         public void SiUnJugadorSeQuedaSinFichasGanaLaPartida()
         {}

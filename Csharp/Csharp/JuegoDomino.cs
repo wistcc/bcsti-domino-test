@@ -16,6 +16,10 @@ namespace Csharp
         public List<Jugador> Jugadores { get; set; }
 
         private int _turnoActual;
+        public int TurnoActual
+        {
+            get { return _turnoActual; }
+        }
 
         public JuegoDomino()
         {
@@ -121,6 +125,22 @@ namespace Csharp
             }
 
             return "";
+        }
+
+        public void PasarJuego(Jugador jugador)
+        {
+            if (jugador == Jugadores[_turnoActual])
+            {
+                var tieneFichas = false;
+
+                foreach (var ficha in jugador.Fichas)
+                {
+                    if (Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha))
+                        throw new Exception("El jugador no puede pasar con fichas");
+                }
+
+                PasarTurno();
+            }
         }
     }
 }
