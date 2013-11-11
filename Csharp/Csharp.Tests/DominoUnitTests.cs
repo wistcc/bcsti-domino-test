@@ -81,6 +81,14 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
+        public void DebenHaberCuatroJugadores()
+        {
+            var juego = new JuegoDomino();
+
+            Assert.AreEqual(4, juego.Jugadores.Count, "No hay cuatro jugadores");
+        }
+
+        [TestMethod]
         public void LosJugadoresTienenFichasAsignadasAlComenzarElJuego()
         {
             var juego = new JuegoDomino();
@@ -90,5 +98,53 @@ namespace Csharp.Tests
             Assert.AreEqual(7, juego.Jugadores[2].Fichas.Count);
             Assert.AreEqual(7, juego.Jugadores[3].Fichas.Count);
         }
+
+        public void JugadorSoloPuedeJugarFichasQueTengaAsignadas()
+        {}
+
+        public void JugadorSoloPuedeJugarSiEsSuTurno()
+        {}
+
+        public void JugadorPuedePasar()
+        {}
+
+        public void JugadorNoPuedePasarConFichasDisponibles()
+        {}
+
+        public void SiUnJugadorSeQuedaSinFichasGanaLaPartida()
+        {}
+
+        public void ElJuegoCalculaElScoreDeQuienGano()
+        {}
+
+        public void ElJuegoDetectaCuandoHayUnTranque()
+        {}
+
+        public void SiHayUnTranqueElJuegoDecideElGanador()
+        {}
+
+        public void SePuedeJugarMasDeUnaPartida()
+        {}
+
+        public void ElJugadorQueDominoLaPartidaAnteriorDebeComenzarLaSiguiente()
+        {}
+
+        public void LaPrimeraPartidaDebeComenzarConDobleSeis()
+        {}
+
+        public void ElEquipoCon200PuntosGanaElJuego()
+        {}
+
+        public void PenalidadSiElSegundoJugadorNoTieneFichas()
+        {}
+
+        public void PenalidadSegundoJugadorNoAplicaSiTerceroNoTiene()
+        {}
+
+        public void PenalidadSiTresJugadoresPasanConsecutivamente()
+        {}
+
+        public void PuntosAdicionalesConKapikua()
+        {}
     }
 }

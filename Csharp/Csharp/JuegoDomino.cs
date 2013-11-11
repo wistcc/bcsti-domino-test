@@ -35,7 +35,7 @@ namespace Csharp
             for (var i = 0; i < 4; i++)
             {
                 var jugador = new Jugador();
-                for (int j = 0; j < 7; j++)
+                for (var j = 0; j < 7; j++)
                 {
                     jugador.Fichas.Add(fichasPosibles[i*7 + j]);
                 }
