@@ -215,12 +215,15 @@ namespace Csharp.Tests
             Assert.IsTrue(juego.TurnoActual == -1);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void SiSeTerminaLaPartidaNosePuedeJugar()
         {
             var juego = new JuegoDomino() {Jugadores = InicializarJugadores()};
             SimularJuego(juego);
 
-            
+            var otroJugadorConFichas = juego.Jugadores.First(f => f.Fichas.Any());
+            juego.JugarFicha(otroJugadorConFichas, otroJugadorConFichas.Fichas.First());
         }
 
 
