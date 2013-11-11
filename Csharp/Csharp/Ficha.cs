@@ -34,5 +34,25 @@ namespace Csharp
         {
             Valor = new ValorFicha(a, b);
         }
+
+        public bool PuedeJugar(Ficha fichaPropuesta)
+        {
+            return  Valor.A == fichaPropuesta.Valor.A ||
+                    Valor.A == fichaPropuesta.Valor.B || 
+                    Valor.B == fichaPropuesta.Valor.A || 
+                    Valor.B == fichaPropuesta.Valor.B;
+        }
+
+        public bool PuedeJugarA(Ficha fichaPropuesta)
+        {
+            return Valor.A == fichaPropuesta.Valor.A ||
+                   Valor.A == fichaPropuesta.Valor.B;
+        }
+
+        public bool PuedeJugarB(Ficha fichaPropuesta)
+        {
+            return Valor.B == fichaPropuesta.Valor.A ||
+                   Valor.B == fichaPropuesta.Valor.B;
+        }
     }
 }

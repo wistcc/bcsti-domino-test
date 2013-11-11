@@ -27,15 +27,12 @@ namespace Csharp
             else
             {
                 //Quiere decir que ya se ha jugado, permito anexar una nueva
-
-                if (Fichas.Valor.A == ficha.Valor.A || Fichas.Valor.A == ficha.Valor.B)
-                {
-                    Fichas.Siguiente = ficha;
-                }
-                else if (Fichas.Valor.B == ficha.Valor.A || Fichas.Valor.B == ficha.Valor.B)
-                {
+                if (Fichas.PuedeJugarA(ficha))
                     Fichas.Anterior = ficha;
-                }
+
+                if (Fichas.PuedeJugarB(ficha))
+                    Fichas.Siguiente = ficha;
+
             }
         }
 
