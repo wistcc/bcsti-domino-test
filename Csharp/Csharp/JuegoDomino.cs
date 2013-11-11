@@ -31,10 +31,16 @@ namespace Csharp
                 //Se buscan los extremos jugados en el tablero
                 if (Fichas.First().PuedeJugarA(ficha))
                 {
+                    if (Fichas.First().Valor.A == ficha.Valor.A)
+                        ficha.Voltear();
+
                     Fichas.Insert(0, ficha);
                 }
                 else if (Fichas.Last().PuedeJugarB(ficha))
                 {
+                    if (Fichas.Last().Valor.B == ficha.Valor.B)
+                        ficha.Voltear();
+
                     Fichas.Add(ficha);
                 }
 

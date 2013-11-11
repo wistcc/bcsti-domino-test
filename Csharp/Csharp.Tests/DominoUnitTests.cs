@@ -38,7 +38,6 @@ namespace Csharp.Tests
             var juego = new JuegoDomino();
             juego.JugarFicha(Jugadores.Primero, new Ficha(6,6)); //Primera
             juego.JugarFicha(Jugadores.Segundo, new Ficha(6,0)); //Segunda
-            juego.JugarFicha(Jugadores.Tercero, new Ficha(0,3));
 
             Assert.IsTrue(juego.Fichas.Count > 1);
         }
@@ -52,6 +51,19 @@ namespace Csharp.Tests
             juego.JugarFicha(Jugadores.Tercero, new Ficha(3,2));
 
             Assert.IsTrue(juego.Fichas.Count == 1);
+        }
+
+        [TestMethod]
+        public void SeJuegaUnaRondaExitosamente()
+        {
+            var juego = new JuegoDomino();
+
+            juego.JugarFicha(Jugadores.Primero, new Ficha(6, 6));
+            juego.JugarFicha(Jugadores.Segundo, new Ficha(6, 0));   
+            juego.JugarFicha(Jugadores.Tercero, new Ficha(0,2)); 
+            juego.JugarFicha(Jugadores.Cuarto, new Ficha(2,5));
+
+            Assert.AreEqual(4, juego.Fichas.Count);
         }
 
     }

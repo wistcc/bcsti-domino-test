@@ -33,6 +33,11 @@ namespace Csharp
             Valor = new ValorFicha(a, b);
         }
 
+        public void Voltear()
+        {
+            Valor = new ValorFicha(Valor.B, Valor.A);
+        }
+
         public bool PuedeJugar(Ficha fichaPropuesta)
         {
             return  Valor.A == fichaPropuesta.Valor.A ||
