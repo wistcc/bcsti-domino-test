@@ -31,6 +31,7 @@ namespace Csharp.Tests
         public void DebePoderComenzarUnJuego()
         {
             var juego = new JuegoDomino();
+            juego.Jugadores = InicializarJugadores();
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
 
             Assert.IsNotNull(juego);
@@ -49,14 +50,14 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
-        public void SoloSePuedeJugarUnNumeroComunEnTablero()
+        [ExpectedException(typeof(Exception))]
+        public void SoloSePuedeJugarMovidasValidas()
         {
             var juego = new JuegoDomino();
             juego.Jugadores = InicializarJugadores();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(5, 5));
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(4, 3));
-            juego.JugarFicha(juego.Jugadores[2], new Ficha(3, 2));
 
             Assert.IsTrue(juego.Fichas.Count == 1);
         }
@@ -95,6 +96,7 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void JugadorSoloPuedeJugarFichasQueTengaAsignadas()
         {
             var juego = new JuegoDomino();
@@ -108,23 +110,27 @@ namespace Csharp.Tests
 
             juego.JugarFicha(primerJugador, new Ficha(4,5));
 
-            Assert.AreEqual(0, juego.Fichas.Count);
-
         }
 
         [TestMethod]
         public void CuandoJugadorPoneUnaFichaSeDebeQuitarDeSuColeccion()
         {
             var juego = new JuegoDomino();
-            var primerJugador = new Jugador(6,0,6,6,5,4,4,4,1,2,3,0,2,3);
-            juego.JugarFicha(primerJugador, new Ficha(6,0));
-            
-            Assert.AreEqual(6, primerJugador.Fichas.Count);
+            juego.Jugadores[0] = new Jugador(6,0,6,6,5,4,4,4,1,2,3,0,2,3);
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 0));
+
+            Assert.AreEqual(6, juego.Jugadores[0].Fichas.Count);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void JugadorSoloPuedeJugarSiEsSuTurno()
         {
-            
+            var juego = new JuegoDomino();
+            juego.Jugadores = InicializarJugadores();
+
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(4, 4));
         }
 
         public void JugadorPuedePasar()

@@ -13,12 +13,15 @@ namespace Csharp
     {
         public List<Ficha> Fichas { get; set; }
 
-        public List<Jugador> Jugadores { get; set; } 
+        public List<Jugador> Jugadores { get; set; }
+
+        private int _turnoActual;
 
         public JuegoDomino()
         {
             Jugadores = new List<Jugador>();
             Fichas = new List<Ficha>();
+            _turnoActual = 0;
 
             //Se crean todas las fichas posibles
             var fichasPosibles = new List<Ficha>();
@@ -47,17 +50,18 @@ namespace Csharp
 
         public void JugarFicha(Jugador jugador, Ficha ficha)
         {
+            if (jugador != Jugadores[_turnoActual])
+                throw new ArgumentException("El jugador no puede jugar si no es su turno");
+
             if (!jugador.PoseeFicha(ficha))
-            {
-                return;
-                //throw new ArgumentException("El jugador no puede jugar con fichas que no posee");
-            }
+                throw new ArgumentException("El jugador no puede jugar con fichas que no posee");
 
             if (Fichas == null || Fichas.Count == 0)
             {
                 //Quiere decir que nunca se ha jugado. Se instancia la lista y comienza el juego
                 Fichas = new List<Ficha> { ficha };
                 jugador.Fichas.Remove(ficha);
+                PasarTurno();
             }
             else
             {
@@ -74,6 +78,7 @@ namespace Csharp
 
                     Fichas.Insert(0, ficha);
                     jugador.Fichas.Remove(ficha);
+                    PasarTurno();
                 }
                 else if (Fichas.Last().PuedeJugarB(ficha))
                 {
@@ -82,8 +87,21 @@ namespace Csharp
 
                     Fichas.Add(ficha);
                     jugador.Fichas.Remove(ficha);
+                    PasarTurno();
                 }
+                else
+                {
+                    throw new Exception("Jugada Invalida!");
+                }
+                
             }
+        }
+
+        private void PasarTurno()
+        {
+            _turnoActual++;
+            if (_turnoActual == 4)
+                _turnoActual = 0;
         }
 
         public void JugarFicha(int numeroJugador, Ficha ficha)
