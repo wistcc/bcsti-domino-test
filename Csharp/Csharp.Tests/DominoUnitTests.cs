@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,18 +16,61 @@ namespace Csharp.Tests
     [TestClass]
     public class DominoUnitTests
     {
+        #region Helpers
+
         private List<Jugador> InicializarJugadores()
         {
             var list = new List<Jugador>
             {
                 new Jugador(6,4, 6,6, 5,4, 4,4, 1,2, 3,0, 0,5),
-                new Jugador(3,4, 6,0, 0,0, 0,1, 0,2, 0,4, 3,2),
+                new Jugador(3,4, 6,0, 0,0, 0,1, 5,6, 0,4, 3,2),
                 new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 1,5, 1,6),
                 new Jugador(2,2, 5,2, 2,6, 3,3, 3,5, 3,6, 5,5)
             };
 
             return list;
         }
+
+        private void SimularJuego(JuegoDomino juego)
+        {
+            while (juego.Jugadores[0].Fichas.Count > 0 &&
+                   juego.Jugadores[1].Fichas.Count > 0 &&
+                   juego.Jugadores[2].Fichas.Count > 0 &&
+                   juego.Jugadores[3].Fichas.Count > 0)
+            {
+                var jugador = juego.Jugadores[juego.TurnoActual];
+
+                if (juego.Fichas.Count == 0)
+                {
+                    juego.JugarFicha(jugador, jugador.Fichas[0]);
+                }
+                else
+                {
+                    var fichaInicial = juego.Fichas.First();
+                    var fichaFinal = juego.Fichas.Last();
+
+                    var puedeJugar = false;
+                    foreach (var ficha in jugador.Fichas)
+                    {
+                        if (fichaInicial.PuedeJugarA(ficha) || fichaFinal.PuedeJugarB(ficha))
+                        {
+                            juego.JugarFicha(jugador, ficha);
+                            puedeJugar = true;
+                            break;
+                        }
+                    }
+
+                    if (!puedeJugar)
+                        juego.PasarJuego(jugador);
+                }
+
+                Trace.WriteLine("");
+                juego.DibujarTablero();
+            }
+        }
+
+        #endregion
+
             
         [TestMethod]
         public void DebePoderComenzarUnJuego()
@@ -160,8 +205,24 @@ namespace Csharp.Tests
             juego.PasarJuego(juego.Jugadores[3]);
         }
 
-        public void SiUnJugadorSeQuedaSinFichasGanaLaPartida()
-        {}
+        [TestMethod]
+        public void SiUnJugadorSeQuedaSinFichasSeTerminaLaPartida()
+        {
+            var juego = new JuegoDomino {Jugadores = InicializarJugadores()};
+
+            SimularJuego(juego);
+
+            Assert.IsTrue(juego.TurnoActual == -1);
+        }
+
+        public void SiSeTerminaLaPartidaNosePuedeJugar()
+        {
+            var juego = new JuegoDomino() {Jugadores = InicializarJugadores()};
+            SimularJuego(juego);
+
+            
+        }
+
 
         public void ElJuegoCalculaElScoreDeQuienGano()
         {}

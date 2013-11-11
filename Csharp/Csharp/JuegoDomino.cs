@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace Csharp
 {
@@ -54,6 +55,9 @@ namespace Csharp
 
         public void JugarFicha(Jugador jugador, Ficha ficha)
         {
+            if (_turnoActual == -1)
+                throw new Exception("El partido ha terminado");
+
             if (jugador != Jugadores[_turnoActual])
                 throw new ArgumentException("El jugador no puede jugar si no es su turno");
 
@@ -82,7 +86,7 @@ namespace Csharp
 
                     Fichas.Insert(0, ficha);
                     jugador.Fichas.Remove(ficha);
-                    PasarTurno();
+                    PasarTurno(jugador.Fichas.Count == 0);
                 }
                 else if (Fichas.Last().PuedeJugarB(ficha))
                 {
@@ -91,7 +95,7 @@ namespace Csharp
 
                     Fichas.Add(ficha);
                     jugador.Fichas.Remove(ficha);
-                    PasarTurno();
+                    PasarTurno(jugador.Fichas.Count == 0);
                 }
                 else
                 {
@@ -101,8 +105,14 @@ namespace Csharp
             }
         }
 
-        private void PasarTurno()
+        private void PasarTurno(bool terminarPartida = false)
         {
+            if (terminarPartida)
+            {
+                _turnoActual = -1;
+                return;
+            }
+
             _turnoActual++;
             if (_turnoActual == 4)
                 _turnoActual = 0;
@@ -114,11 +124,8 @@ namespace Csharp
                 JugarFicha(Jugadores[numeroJugador], ficha);
         }
 
-        public string DibujarTablero(Ficha ficha = null)
+        public string DibujarTablero()
         {
-            if (Fichas == null)
-                return "No se ha jugado";
-
             foreach (var f in Fichas)
             {
                 Trace.Write(f.Valor);
@@ -129,6 +136,9 @@ namespace Csharp
 
         public void PasarJuego(Jugador jugador)
         {
+            if (_turnoActual == -1)
+                throw new Exception("El partido ha terminado");
+
             if (jugador == Jugadores[_turnoActual])
             {
                 var tieneFichas = false;
