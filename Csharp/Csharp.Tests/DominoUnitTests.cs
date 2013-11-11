@@ -14,6 +14,19 @@ namespace Csharp.Tests
     [TestClass]
     public class DominoUnitTests
     {
+        private List<Jugador> InicializarJugadores()
+        {
+            var list = new List<Jugador>
+            {
+                new Jugador(6,4, 6,6, 5,4, 4,4, 1,2, 3,0, 2,3),
+                new Jugador(3,4, 6,0, 0,0, 0,1, 0,2, 0,4, 0,5),
+                new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 1,5, 1,6),
+                new Jugador(2,2, 5,2, 2,6, 3,3, 3,5, 3,6, 5,5)
+            };
+
+            return list;
+        }
+            
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
@@ -27,8 +40,7 @@ namespace Csharp.Tests
         public void SePuedeJugarUnaFichaNueva()
         {
             var juego = new JuegoDomino();
-            juego.Jugadores[0] = new Jugador(new [] {6,6,6,4});
-            juego.Jugadores[1] = new Jugador(new [] {6,0,1,1});
+            juego.Jugadores = InicializarJugadores();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6)); //Primera
             juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0)); //Segunda
@@ -40,9 +52,7 @@ namespace Csharp.Tests
         public void SoloSePuedeJugarUnNumeroComunEnTablero()
         {
             var juego = new JuegoDomino();
-            juego.Jugadores[0] = new Jugador(new[] { 5, 5, 6, 4 });
-            juego.Jugadores[1] = new Jugador(new[] { 3, 4, 1, 1 });
-            juego.Jugadores[2] = new Jugador(new[] { 2, 3, 1, 0 });
+            juego.Jugadores = InicializarJugadores();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(5, 5));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(4, 3));
@@ -55,37 +65,13 @@ namespace Csharp.Tests
         public void SeJuegaUnaRondaExitosamente()
         {
             var juego = new JuegoDomino();
-
-            juego.Jugadores[0] = new Jugador(new[] { 6, 6, 6, 4 });
-            juego.Jugadores[1] = new Jugador(new[] { 3, 4, 6, 0 });
-            juego.Jugadores[2] = new Jugador(new[] { 2, 3, 2, 0 });
-            juego.Jugadores[3] = new Jugador(new[] { 2, 3, 5, 2 });
+            juego.Jugadores = InicializarJugadores();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0));
             juego.JugarFicha(juego.Jugadores[2], new Ficha(0, 2));
             juego.JugarFicha(juego.Jugadores[3], new Ficha(5, 2));
 
-            Assert.AreEqual(4, juego.Fichas.Count);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void NoSePuedeRepetirFichaYaJugada()
-        {
-            var juego = new JuegoDomino();
-
-            juego.Jugadores[0] = new Jugador(new[] { 6, 6, 6, 4 });
-            juego.Jugadores[1] = new Jugador(new[] { 3, 4, 6, 0 });
-            juego.Jugadores[2] = new Jugador(new[] { 2, 3, 2, 0 });
-            juego.Jugadores[3] = new Jugador(new[] { 2, 3, 5, 2 });
-
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0));
-            juego.JugarFicha(juego.Jugadores[2], new Ficha(0, 2));
-            juego.JugarFicha(juego.Jugadores[3], new Ficha(5, 2));
-
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             Assert.AreEqual(4, juego.Fichas.Count);
         }
 
@@ -130,16 +116,16 @@ namespace Csharp.Tests
         public void CuandoJugadorPoneUnaFichaSeDebeQuitarDeSuColeccion()
         {
             var juego = new JuegoDomino();
-            var primerJugador = juego.Jugadores[0];
-            primerJugador = new Jugador(6,0,6,6,5,4,4,4,1,2,3,0,2,3);
-
+            var primerJugador = new Jugador(6,0,6,6,5,4,4,4,1,2,3,0,2,3);
             juego.JugarFicha(primerJugador, new Ficha(6,0));
             
             Assert.AreEqual(6, primerJugador.Fichas.Count);
         }
 
         public void JugadorSoloPuedeJugarSiEsSuTurno()
-        {}
+        {
+            
+        }
 
         public void JugadorPuedePasar()
         {}
