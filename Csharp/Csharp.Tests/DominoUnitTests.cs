@@ -226,9 +226,21 @@ namespace Csharp.Tests
             juego.JugarFicha(otroJugadorConFichas, otroJugadorConFichas.Fichas.First());
         }
 
-
+        [TestMethod]
         public void ElJuegoCalculaElScoreDeQuienGano()
-        {}
+        {
+            var juego = new JuegoDomino()
+            {
+                Jugadores = InicializarJugadores()
+            };
+
+            var scoreOriginal = juego.Score.Select(f => f.Sum()).ToList();
+            SimularJuego(juego);
+            var scoreFinal = juego.Score;
+
+            Assert.IsTrue(scoreOriginal[0] != scoreFinal[0].Sum() 
+                       || scoreOriginal[1] != scoreFinal[1].Sum());
+        }
 
         public void ElJuegoDetectaCuandoHayUnTranque()
         {}

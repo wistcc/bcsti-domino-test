@@ -41,6 +41,11 @@ namespace Csharp
 
         public ValorFicha Valor { get; set; }
 
+        public int Puntos
+        {
+            get { return Valor.A + Valor.B; }
+        }
+
         public Ficha(int a, int b)
         {
             Valor = new ValorFicha(a, b);

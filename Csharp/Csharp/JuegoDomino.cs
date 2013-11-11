@@ -12,9 +12,13 @@ namespace Csharp
     /// </summary>
     public class JuegoDomino
     {
+        #region Propiedades
+
         public List<Ficha> Fichas { get; set; }
 
         public List<Jugador> Jugadores { get; set; }
+
+        public List<Int32>[] Score;
 
         private int _turnoActual;
         public int TurnoActual
@@ -22,10 +26,17 @@ namespace Csharp
             get { return _turnoActual; }
         }
 
+        #endregion
+
+
         public JuegoDomino()
         {
             Jugadores = new List<Jugador>();
             Fichas = new List<Ficha>();
+            Score = new List<int> [2];
+            Score[0] = new List<int> {0};
+            Score[1] = new List<int> {0};
+            
             _turnoActual = 0;
 
             //Se crean todas las fichas posibles
@@ -40,10 +51,10 @@ namespace Csharp
 
             //Se reparten entre los jugadores
             fichasPosibles = fichasPosibles.OrderBy(a => Guid.NewGuid()).ToList();
-
             for (var i = 0; i < 4; i++)
             {
-                var jugador = new Jugador();
+                var equipo = i%2 == 0 ? 1 : 2; 
+                var jugador = new Jugador(){Equipo = (Frentes)equipo};
                 for (var j = 0; j < 7; j++)
                 {
                     jugador.Fichas.Add(fichasPosibles[i*7 + j]);
@@ -110,12 +121,21 @@ namespace Csharp
             if (terminarPartida)
             {
                 _turnoActual = -1;
+                CalcularScores();
                 return;
             }
 
             _turnoActual++;
             if (_turnoActual == 4)
                 _turnoActual = 0;
+        }
+
+        private void CalcularScores()
+        {
+            var frenteGanador = Jugadores.First(j => j.Fichas.Count == 0).Equipo;
+            var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
+
+            Score[(int) frenteGanador].Add(score);
         }
 
         public void JugarFicha(int numeroJugador, Ficha ficha)
