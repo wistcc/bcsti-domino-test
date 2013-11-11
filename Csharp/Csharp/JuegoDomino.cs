@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,6 @@ namespace Csharp
 
         public void JugarFicha(Jugadores jugador, Ficha ficha)
         {
-
             if (Fichas == null)
             {
                 //Quiere decir que nunca se ha jugado
@@ -36,10 +36,17 @@ namespace Csharp
                 {
                     Fichas.Anterior = ficha;
                 }
-
             }
+        }
 
-            
+        public string DibujarTablero(Ficha ficha = null)
+        {
+            if (ficha == null)
+                ficha = Fichas;
+
+            Trace.Write(ficha.Valor);
+
+            return "";
         }
     }
 }

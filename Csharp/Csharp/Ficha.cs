@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System;
+using System.Text;
 
 namespace Csharp
 {
@@ -16,6 +18,11 @@ namespace Csharp
             {
                 A = a;
                 B = b;
+            }
+
+            public override string ToString()
+            {
+                return String.Format("[{0},{1}]", A, B);
             }
         }
 
