@@ -53,7 +53,7 @@ namespace Csharp
                 //throw new ArgumentException("El jugador no puede jugar con fichas que no posee");
             }
 
-            if (Fichas == null)
+            if (Fichas == null || Fichas.Count == 0)
             {
                 //Quiere decir que nunca se ha jugado. Se instancia la lista y comienza el juego
                 Fichas = new List<Ficha> { ficha };

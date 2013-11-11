@@ -15,7 +15,15 @@ namespace Csharp
 
         public Jugador()
         {
-            this.Fichas = new List<Ficha>();
+            Fichas = new List<Ficha>();
+        }
+
+        public Jugador(params int[] fichas) : this()
+        {
+            for (var i = 0; i < fichas.Length; i+= 2)
+            {
+                Fichas.Add(new Ficha(fichas[i], fichas[i+1]));
+            }
         }
 
         public bool PoseeFicha(Ficha ficha)
