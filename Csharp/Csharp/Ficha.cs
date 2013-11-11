@@ -27,8 +27,6 @@ namespace Csharp
         }
 
         public ValorFicha Valor { get; set; }
-        public Ficha Siguiente { get; set; }
-        public Ficha Anterior { get; set; }
 
         public Ficha(int a, int b)
         {

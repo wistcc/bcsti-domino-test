@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Csharp
 {
@@ -12,7 +10,7 @@ namespace Csharp
     /// </summary>
     public class JuegoDomino
     {
-        public Ficha Fichas { get; set; }
+        public List<Ficha> Fichas { get; set; }
 
         public void JugarFicha(Jugadores jugador, Ficha ficha)
         {
@@ -20,28 +18,38 @@ namespace Csharp
             {
                 //Quiere decir que nunca se ha jugado
                 if (ficha.Valor.A == ficha.Valor.B)
-                    Fichas = ficha;
+                {
+                    Fichas = new List<Ficha> {ficha};
+                }
                 else
                     throw new ArgumentException("El juego debe comenzar con un doble!");
             }
             else
             {
                 //Quiere decir que ya se ha jugado, permito anexar una nueva
-                if (Fichas.PuedeJugarA(ficha))
-                    Fichas.Anterior = ficha;
-
-                if (Fichas.PuedeJugarB(ficha))
-                    Fichas.Siguiente = ficha;
+                
+                //Se buscan los extremos jugados en el tablero
+                if (Fichas.First().PuedeJugarA(ficha))
+                {
+                    Fichas.Insert(0, ficha);
+                }
+                else if (Fichas.Last().PuedeJugarB(ficha))
+                {
+                    Fichas.Add(ficha);
+                }
 
             }
         }
 
         public string DibujarTablero(Ficha ficha = null)
         {
-            if (ficha == null)
-                ficha = Fichas;
+            if (Fichas == null)
+                return "No se ha jugado";
 
-            Trace.Write(ficha.Valor);
+            for (int i = 0; i < Fichas.Count; i++)
+            {
+                Trace.Write(Fichas[i].Valor);
+            }
 
             return "";
         }

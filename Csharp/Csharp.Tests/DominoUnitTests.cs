@@ -38,8 +38,9 @@ namespace Csharp.Tests
             var juego = new JuegoDomino();
             juego.JugarFicha(Jugadores.Primero, new Ficha(6,6)); //Primera
             juego.JugarFicha(Jugadores.Segundo, new Ficha(6,0)); //Segunda
+            juego.JugarFicha(Jugadores.Tercero, new Ficha(0,3));
 
-            Assert.IsTrue(juego.Fichas.Anterior != null || juego.Fichas.Siguiente != null);
+            Assert.IsTrue(juego.Fichas.Count > 1);
         }
 
         [TestMethod]
@@ -48,9 +49,9 @@ namespace Csharp.Tests
             var juego = new JuegoDomino();
             juego.JugarFicha(Jugadores.Primero, new Ficha(5,5));
             juego.JugarFicha(Jugadores.Segundo, new Ficha(4,3));
+            juego.JugarFicha(Jugadores.Tercero, new Ficha(3,2));
 
-            Assert.IsNull(juego.Fichas.Siguiente);
-            Assert.IsNull(juego.Fichas.Anterior);
+            Assert.IsTrue(juego.Fichas.Count == 1);
         }
 
     }
