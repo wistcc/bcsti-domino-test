@@ -31,6 +31,19 @@ namespace Csharp.Tests
             return list;
         }
 
+        private List<Jugador> InicializarJugadoresConTranque()
+        {
+            var list = new List<Jugador>
+            {
+                new Jugador(6,0, 6,1, 6,2, 6,3, 6,4, 6,5, 1,2),
+                new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1,5, 3,2),
+                new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 0,4, 6,6),
+                new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 4,4, 3,4)
+            };
+
+            return list;
+        }
+
         private void SimularJuego(JuegoDomino juego)
         {
             while (juego.Jugadores[0].Fichas.Count > 0 &&
@@ -71,7 +84,7 @@ namespace Csharp.Tests
 
         #endregion
 
-            
+
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
@@ -153,7 +166,7 @@ namespace Csharp.Tests
                 new Ficha(1,1), new Ficha(0,2)
             };
 
-            juego.JugarFicha(primerJugador, new Ficha(4,5));
+            juego.JugarFicha(primerJugador, new Ficha(4, 5));
 
         }
 
@@ -161,7 +174,7 @@ namespace Csharp.Tests
         public void CuandoJugadorPoneUnaFichaSeDebeQuitarDeSuColeccion()
         {
             var juego = new JuegoDomino();
-            juego.Jugadores[0] = new Jugador(6,0,6,6,5,4,4,4,1,2,3,0,2,3);
+            juego.Jugadores[0] = new Jugador(6, 0, 6, 6, 5, 4, 4, 4, 1, 2, 3, 0, 2, 3);
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 0));
 
             Assert.AreEqual(6, juego.Jugadores[0].Fichas.Count);
@@ -184,9 +197,9 @@ namespace Csharp.Tests
             var juego = new JuegoDomino();
             juego.Jugadores = InicializarJugadores();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(3,0));
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(3,2));
-            juego.JugarFicha(juego.Jugadores[2], new Ficha(2,0));
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
+            juego.JugarFicha(juego.Jugadores[1], new Ficha(3, 2));
+            juego.JugarFicha(juego.Jugadores[2], new Ficha(2, 0));
             juego.PasarJuego(juego.Jugadores[3]);
 
             Assert.AreEqual(0, juego.TurnoActual);
@@ -208,7 +221,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void SiUnJugadorSeQuedaSinFichasSeTerminaLaPartida()
         {
-            var juego = new JuegoDomino {Jugadores = InicializarJugadores()};
+            var juego = new JuegoDomino { Jugadores = InicializarJugadores() };
 
             SimularJuego(juego);
 
@@ -219,7 +232,7 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void SiSeTerminaLaPartidaNosePuedeJugar()
         {
-            var juego = new JuegoDomino() {Jugadores = InicializarJugadores()};
+            var juego = new JuegoDomino() { Jugadores = InicializarJugadores() };
             SimularJuego(juego);
 
             var otroJugadorConFichas = juego.Jugadores.First(f => f.Fichas.Any());
@@ -238,38 +251,49 @@ namespace Csharp.Tests
             SimularJuego(juego);
             var scoreFinal = juego.Score;
 
-            Assert.IsTrue(scoreOriginal[0] != scoreFinal[0].Sum() 
+            Assert.IsTrue(scoreOriginal[0] != scoreFinal[0].Sum()
                        || scoreOriginal[1] != scoreFinal[1].Sum());
         }
 
+        [TestMethod]
         public void ElJuegoDetectaCuandoHayUnTranque()
-        {}
+        {
+            var juego = new JuegoDomino()
+            {
+                Jugadores = InicializarJugadoresConTranque()
+            };
+
+            SimularJuego(juego);
+
+            Assert.IsTrue(juego.TurnoActual == -1 && juego.Jugadores.Count(f => f.Fichas.Any()) == 4);
+        }
+
 
         public void SiHayUnTranqueElJuegoDecideElGanador()
-        {}
+        { }
 
         public void SePuedeJugarMasDeUnaPartida()
-        {}
+        { }
 
         public void ElJugadorQueDominoLaPartidaAnteriorDebeComenzarLaSiguiente()
-        {}
+        { }
 
         public void LaPrimeraPartidaDebeComenzarConDobleSeis()
-        {}
+        { }
 
         public void ElEquipoCon200PuntosGanaElJuego()
-        {}
+        { }
 
         public void PenalidadSiElSegundoJugadorNoTieneFichas()
-        {}
+        { }
 
         public void PenalidadSegundoJugadorNoAplicaSiTerceroNoTiene()
-        {}
+        { }
 
         public void PenalidadSiTresJugadoresPasanConsecutivamente()
-        {}
+        { }
 
         public void PuntosAdicionalesConKapikua()
-        {}
+        { }
     }
 }
