@@ -26,6 +26,16 @@ namespace Csharp
             get { return _turnoActual; }
         }
 
+        private int ExtremoIzq
+        {
+            get { return Fichas.First().Valor.A; }
+        }
+
+        private int ExtremoDer
+        {
+            get { return Fichas.Last().Valor.B; }
+        }
+
         #endregion
 
 
@@ -33,10 +43,10 @@ namespace Csharp
         {
             Jugadores = new List<Jugador>();
             Fichas = new List<Ficha>();
-            Score = new List<int> [2];
-            Score[0] = new List<int> {0};
-            Score[1] = new List<int> {0};
-            
+            Score = new List<int>[2];
+            Score[0] = new List<int> { 0 };
+            Score[1] = new List<int> { 0 };
+
             _turnoActual = 0;
 
             //Se crean todas las fichas posibles
@@ -45,7 +55,7 @@ namespace Csharp
             {
                 for (var j = i; j < 7; j++)
                 {
-                    fichasPosibles.Add(new Ficha(i,j));
+                    fichasPosibles.Add(new Ficha(i, j));
                 }
             }
 
@@ -53,11 +63,11 @@ namespace Csharp
             fichasPosibles = fichasPosibles.OrderBy(a => Guid.NewGuid()).ToList();
             for (var i = 0; i < 4; i++)
             {
-                var equipo = i%2 == 0 ? 1 : 2; 
-                var jugador = new Jugador(){Equipo = (Frentes)equipo};
+                var equipo = i % 2 == 0 ? 1 : 2;
+                var jugador = new Jugador() { Equipo = (Frentes)equipo };
                 for (var j = 0; j < 7; j++)
                 {
-                    jugador.Fichas.Add(fichasPosibles[i*7 + j]);
+                    jugador.Fichas.Add(fichasPosibles[i * 7 + j]);
                 }
                 Jugadores.Add(jugador);
             }
@@ -95,59 +105,25 @@ namespace Csharp
                     throw new ArgumentException("No se puede jugar una ficha repetida");
                 }
 
-                //Se revisa si se quiere beneficiar un lado especifico
+                //Se revisa si el jugador tiene intencion de un lado especifico
                 if (ladoPreferido.HasValue)
                 {
-                    //TODO: Abstraer
-                    var valorIzq = Fichas.First().Valor.A;
-                    var valorDer = Fichas.Last().Valor.B;
-
-                    if (ficha.Valor.A == valorIzq && ficha.Valor.B == valorDer ||
-                        ficha.Valor.B == valorIzq && ficha.Valor.A == valorDer)
+                    if (ficha.Valor.A == ExtremoIzq && ficha.Valor.B == ExtremoDer ||
+                        ficha.Valor.B == ExtremoIzq && ficha.Valor.A == ExtremoDer)
                     {
-                        //TODO: DRY THIS SHHH UP!
-                        if (ladoPreferido == valorIzq)
-                        {
-                            //se juega en el lado derecho
-                            if (Fichas.Last().Valor.B == ficha.Valor.B)
-                                ficha.Voltear();
-
-                            Fichas.Add(ficha);
-                            jugador.Fichas.Remove(ficha);
-                            PasarTurno(jugador.Fichas.Count == 0);
-                            return;
-                        }
-                        else
-                        {
-                            if (Fichas.First().Valor.A == ficha.Valor.A)
-                                ficha.Voltear();
-
-                            Fichas.Insert(0, ficha);
-                            jugador.Fichas.Remove(ficha);
-                            PasarTurno(jugador.Fichas.Count == 0);
-                            return;
-                        }
+                        ProcesarJugada(jugador, ficha, ladoPreferido == ExtremoDer);
+                        return;
                     }
                 }
 
-                //Se buscan los extremos jugados en el tablero
+                //De lo contrario se intenta colocar la ficha en el tablero, comenzando por el lado izquierdo
                 if (Fichas.First().PuedeJugarA(ficha))
                 {
-                    if (Fichas.First().Valor.A == ficha.Valor.A)
-                        ficha.Voltear();
-
-                    Fichas.Insert(0, ficha);
-                    jugador.Fichas.Remove(ficha);
-                    PasarTurno(jugador.Fichas.Count == 0);
+                    ProcesarJugada(jugador, ficha, true);
                 }
                 else if (Fichas.Last().PuedeJugarB(ficha))
                 {
-                    if (Fichas.Last().Valor.B == ficha.Valor.B)
-                        ficha.Voltear();
-
-                    Fichas.Add(ficha);
-                    jugador.Fichas.Remove(ficha);
-                    PasarTurno(jugador.Fichas.Count == 0);
+                    ProcesarJugada(jugador, ficha);
                 }
                 else
                 {
@@ -155,6 +131,27 @@ namespace Csharp
                 }
                 
             }
+        }
+
+        private void ProcesarJugada(Jugador jugador, Ficha ficha, bool insertarEnExtremoIzq = false)
+        {
+            if (insertarEnExtremoIzq)
+            {
+                if (Fichas.First().Valor.A == ficha.Valor.A)
+                    ficha.Voltear();
+
+                Fichas.Insert(0, ficha);
+            }
+            else
+            {
+                if (Fichas.Last().Valor.B == ficha.Valor.B)
+                    ficha.Voltear();
+
+                Fichas.Add(ficha);
+            }
+
+            jugador.Fichas.Remove(ficha);
+            PasarTurno(jugador.Fichas.Count == 0);
         }
 
         private void PasarTurno(bool terminarPartida = false)
@@ -176,7 +173,7 @@ namespace Csharp
             var frenteGanador = Jugadores.First(j => j.Fichas.Count == 0).Equipo;
             var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
 
-            Score[(int) frenteGanador].Add(score);
+            Score[(int)frenteGanador].Add(score);
         }
 
 
