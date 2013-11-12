@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 
 namespace Csharp
 {
@@ -64,7 +62,10 @@ namespace Csharp
             for (var i = 0; i < 4; i++)
             {
                 var equipo = i % 2 == 0 ? 1 : 2;
-                var jugador = new Jugador() { Equipo = (Frentes)equipo };
+                var jugador = new Jugador
+                {
+                    Equipo = (Frentes)equipo
+                };
                 for (var j = 0; j < 7; j++)
                 {
                     jugador.Fichas.Add(fichasPosibles[i * 7 + j]);
@@ -108,12 +109,10 @@ namespace Csharp
                 //Se revisa si el jugador tiene intencion de un lado especifico
                 if (ladoPreferido.HasValue)
                 {
-                    if (ficha.Valor.A == ExtremoIzq && ficha.Valor.B == ExtremoDer ||
-                        ficha.Valor.B == ExtremoIzq && ficha.Valor.A == ExtremoDer)
-                    {
-                        ProcesarJugada(jugador, ficha, ladoPreferido == ExtremoDer);
-                        return;
-                    }
+                    if ((ficha.Valor.A != ExtremoIzq || ficha.Valor.B != ExtremoDer) &&
+                        (ficha.Valor.B != ExtremoIzq || ficha.Valor.A != ExtremoDer)) return;
+                    ProcesarJugada(jugador, ficha, ladoPreferido == ExtremoDer);
+                    return;
                 }
 
                 //De lo contrario se intenta colocar la ficha en el tablero, comenzando por el lado izquierdo
@@ -192,18 +191,14 @@ namespace Csharp
             if (_turnoActual == -1)
                 throw new Exception("El partido ha terminado");
 
-            if (jugador == Jugadores[_turnoActual])
+            if (jugador != Jugadores[_turnoActual]) return;
+
+            if (jugador.Fichas.Any(ficha => Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha)))
             {
-                var tieneFichas = false;
-
-                foreach (var ficha in jugador.Fichas)
-                {
-                    if (Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha))
-                        throw new Exception("El jugador no puede pasar con fichas");
-                }
-
-                PasarTurno();
+                throw new Exception("El jugador no puede pasar con fichas");
             }
+
+            PasarTurno();
         }
     }
 }

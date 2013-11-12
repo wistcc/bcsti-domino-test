@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System;
-using System.Text;
+﻿using System;
 
 namespace Csharp
 {
@@ -28,14 +26,10 @@ namespace Csharp
 
             public override bool Equals(object obj)
             {
-                if (obj is ValorFicha)
-                {
-                    var valor = (ValorFicha)obj;
-                    return (A == valor.A && B == valor.B) ||
-                           (A == valor.B && B == valor.A) ;
-                }
-                
-                return false;
+                if (!(obj is ValorFicha)) return false;
+                var valor = (ValorFicha)obj;
+                return (A == valor.A && B == valor.B) ||
+                       (A == valor.B && B == valor.A) ;
             }
         }
 

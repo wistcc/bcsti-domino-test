@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Csharp.Tests
@@ -88,8 +87,10 @@ namespace Csharp.Tests
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
 
             Assert.IsNotNull(juego);
@@ -98,8 +99,10 @@ namespace Csharp.Tests
         [TestMethod]
         public void SePuedeJugarUnaFichaNueva()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6)); //Primera
             juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0)); //Segunda
@@ -110,8 +113,10 @@ namespace Csharp.Tests
         [TestMethod]
         public void SePuedeJugarUnaFichaYEspecificarElOrden()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(0, new Ficha(6,4));
             juego.JugarFicha(1, new Ficha(4,0));
@@ -125,8 +130,10 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void SoloSePuedeJugarMovidasValidas()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(4, 3));
@@ -137,8 +144,10 @@ namespace Csharp.Tests
         [TestMethod]
         public void SeJuegaUnaRondaExitosamente()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0));
@@ -198,8 +207,10 @@ namespace Csharp.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void JugadorSoloPuedeJugarSiEsSuTurno()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[0], new Ficha(4, 4));
@@ -208,8 +219,10 @@ namespace Csharp.Tests
         [TestMethod]
         public void JugadorPuedePasar()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(3, 2));
@@ -223,8 +236,10 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void JugadorNoPuedePasarConFichasDisponibles()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores = InicializarJugadores();
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadores()
+            };
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(0, 6));
@@ -246,7 +261,7 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void SiSeTerminaLaPartidaNosePuedeJugar()
         {
-            var juego = new JuegoDomino() { Jugadores = InicializarJugadores() };
+            var juego = new JuegoDomino { Jugadores = InicializarJugadores() };
             SimularJuego(juego);
 
             var otroJugadorConFichas = juego.Jugadores.First(f => f.Fichas.Any());
@@ -256,7 +271,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void ElJuegoCalculaElScoreDeQuienGano()
         {
-            var juego = new JuegoDomino()
+            var juego = new JuegoDomino
             {
                 Jugadores = InicializarJugadores()
             };
@@ -272,7 +287,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void ElJuegoDetectaCuandoHayUnTranque()
         {
-            var juego = new JuegoDomino()
+            var juego = new JuegoDomino
             {
                 Jugadores = InicializarJugadoresConTranque()
             };
