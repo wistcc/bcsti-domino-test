@@ -303,15 +303,19 @@ namespace Csharp.Tests
         public void ElJuegoDetectaCuandoHayUnTranque()
         {
             var juego = InicializarJuego(iniciarConTranque: true);
-
             SimularJuego(juego, 6);
 
             Assert.IsTrue(juego.TurnoActual == -1 && juego.Jugadores.Count(f => f.Fichas.Any()) == 4);
         }
 
-
+        [TestMethod]
         public void SiHayUnTranqueElJuegoDecideElGanador()
-        { }
+        {
+            var juego = InicializarJuego(iniciarConTranque: true);
+            SimularJuego(juego, 6);
+
+            Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0); 
+        }
 
         public void SePuedeJugarMasDeUnaPartida()
         { }
