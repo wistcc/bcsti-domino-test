@@ -42,6 +42,18 @@ namespace Csharp.Tests
 
             return list;
         }
+        private List<Jugador> InicializarJugadoresConPasoAlIniciar()
+        {
+            var list = new List<Jugador>
+            {
+                new Jugador(6,0, 6,1, 6,2, 6,3, 6,4, 6,5, 1,2),
+                new Jugador(5,5, 2,4, 5,2, 5,4, 3,5, 1,5, 3,2),
+                new Jugador(5,0, 2,0, 1,1, 1,3, 1,4, 0,4, 6,6),
+                new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 4,4, 3,4)
+            };
+
+            return list;
+        }
 
         private void SimularJuego(JuegoDomino juego)
         {
@@ -73,7 +85,16 @@ namespace Csharp.Tests
                     }
 
                     if (!puedeJugar)
+                    {
+                        if (juego.Fichas.Count == 1)
+                        {
+                            var turnoSiguiente = (juego.TurnoActual + 1 == 4) ? 0 : juego.TurnoActual + 1;
+                            var equipoContrario = (int)juego.Jugadores[turnoSiguiente].Equipo;
+
+                            juego.Score[equipoContrario].Add(juego.Penalidad);
+                        }
                         juego.PasarJuego(jugador);
+                    }
                 }
 
                 Trace.WriteLine("");
@@ -118,10 +139,10 @@ namespace Csharp.Tests
                 Jugadores = InicializarJugadores()
             };
 
-            juego.JugarFicha(0, new Ficha(6,4));
-            juego.JugarFicha(1, new Ficha(4,0));
-            juego.JugarFicha(2, new Ficha(0,2));
-            juego.JugarFicha(3, new Ficha(2,6), 6);
+            juego.JugarFicha(0, new Ficha(6, 4));
+            juego.JugarFicha(1, new Ficha(4, 0));
+            juego.JugarFicha(2, new Ficha(0, 2));
+            juego.JugarFicha(3, new Ficha(2, 6), 6);
 
             Assert.IsTrue(juego.Fichas.First().Valor.A == 6 && juego.Fichas.Last().Valor.B == 6);
         }
@@ -313,8 +334,21 @@ namespace Csharp.Tests
         public void ElEquipoCon200PuntosGanaElJuego()
         { }
 
+        [TestMethod]
         public void PenalidadSiElSegundoJugadorNoTieneFichas()
-        { }
+        {
+            var juego = new JuegoDomino
+            {
+                Jugadores = InicializarJugadoresConPasoAlIniciar()
+            };
+
+            SimularJuego(juego);
+
+            var scoreSinPenalidadDeLaPartida = juego.Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
+
+            Assert.IsTrue(scoreSinPenalidadDeLaPartida + juego.Penalidad == juego.Score[0].Sum()
+                          || scoreSinPenalidadDeLaPartida + juego.Penalidad == juego.Score[1].Sum());
+        }
 
         public void PenalidadSegundoJugadorNoAplicaSiTerceroNoTiene()
         { }

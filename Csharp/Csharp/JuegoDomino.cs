@@ -24,6 +24,13 @@ namespace Csharp
             get { return _turnoActual; }
         }
 
+        private readonly int _penalidad;
+
+        public int Penalidad
+        {
+            get { return _penalidad; }
+        }
+
         private int ExtremoIzq
         {
             get { return Fichas.First().Valor.A; }
@@ -46,6 +53,7 @@ namespace Csharp
             Score[1] = new List<int> { 0 };
 
             _turnoActual = 0;
+            _penalidad = 30;
 
             //Se crean todas las fichas posibles
             var fichasPosibles = new List<Ficha>();
