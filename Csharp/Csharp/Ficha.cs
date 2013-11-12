@@ -31,6 +31,11 @@ namespace Csharp
                 return (A == valor.A && B == valor.B) ||
                        (A == valor.B && B == valor.A) ;
             }
+
+            public bool Contains(int valor)
+            {
+                return A == valor || B == valor;
+            }
         }
 
         public ValorFicha Valor { get; set; }
@@ -69,6 +74,11 @@ namespace Csharp
         {
             return Valor.B == fichaPropuesta.Valor.A ||
                    Valor.B == fichaPropuesta.Valor.B;
+        }
+
+        public bool PuedeJugar(int valorFicha)
+        {
+            return Valor.A == valorFicha || Valor.B == valorFicha;
         }
 
 

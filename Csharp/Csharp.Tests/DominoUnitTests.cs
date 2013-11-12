@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Csharp.Tests
@@ -16,6 +17,18 @@ namespace Csharp.Tests
     public class DominoUnitTests
     {
         #region Helpers
+
+        private JuegoDomino InicializarJuego(bool iniciarConTranque = false)
+        {
+            var juego = new JuegoDomino
+            {
+                Jugadores = iniciarConTranque
+                    ? InicializarJugadoresConTranque()
+                    : InicializarJugadores()
+            };
+
+            return juego;
+        }
 
         private List<Jugador> InicializarJugadores()
         {
@@ -34,21 +47,22 @@ namespace Csharp.Tests
         {
             var list = new List<Jugador>
             {
-                new Jugador(6,0, 6,1, 6,2, 6,3, 6,4, 6,5, 1,2),
+                new Jugador(6,0, 6,1, 6,2, 6,3, 2,0, 6,5, 1,2),
                 new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1,5, 3,2),
-                new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 0,4, 6,6),
-                new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 4,4, 3,4)
+                new Jugador(2,4, 6,4, 1,1, 1,3, 1,4, 4,4, 6,6),
+                new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 0,4, 3,4)
             };
 
             return list;
         }
 
-        private void SimularJuego(JuegoDomino juego)
+        private void SimularJuego(JuegoDomino juego, int? preferenciaCuadre = null)
         {
             while (juego.Jugadores[0].Fichas.Count > 0 &&
                    juego.Jugadores[1].Fichas.Count > 0 &&
                    juego.Jugadores[2].Fichas.Count > 0 &&
-                   juego.Jugadores[3].Fichas.Count > 0)
+                   juego.Jugadores[3].Fichas.Count > 0 &&
+                   juego.TurnoActual != -1)
             {
                 var jugador = juego.Jugadores[juego.TurnoActual];
 
@@ -61,22 +75,54 @@ namespace Csharp.Tests
                     var fichaInicial = juego.Fichas.First();
                     var fichaFinal = juego.Fichas.Last();
 
-                    var puedeJugar = false;
-                    foreach (var ficha in jugador.Fichas)
+                    var fichasValidas = jugador.Fichas.Where(f =>
+                        fichaInicial.PuedeJugarA(f) || fichaFinal.PuedeJugarB(f)).ToList();
+
+                    if (fichasValidas.Any())
                     {
-                        if (fichaInicial.PuedeJugarA(ficha) || fichaFinal.PuedeJugarB(ficha))
+                        if (preferenciaCuadre.HasValue)
                         {
-                            juego.JugarFicha(jugador, ficha);
-                            puedeJugar = true;
-                            break;
+                            if (!fichasValidas.Any(f => f.Valor.Contains(preferenciaCuadre.Value)))
+                            {
+                                //Si no hay fichas con el vlaor deseado, se juega una de las posibles
+                                juego.JugarFicha(jugador, fichasValidas.First());
+                            }
+                            else
+                            {
+                                //Se intenta cuadrar
+                                var fichaAJugar = fichasValidas.FirstOrDefault(
+                                    f => fichaInicial.PuedeJugarA(f) && fichaFinal.PuedeJugarB(f));
+
+                                if (fichaAJugar != null)
+                                {
+                                    juego.JugarFicha(jugador, fichaAJugar, preferenciaCuadre);
+                                }
+                                else
+                                {
+                                    //Si no se puede se cuadrar se intenta conservar el fijo (cabeza)
+                                    var fichasQueNoMatanFijo = fichasValidas
+                                        .Where(f => !f.Valor.Contains(preferenciaCuadre.Value))
+                                        .ToList();
+
+                                    juego.JugarFicha(jugador,
+                                        fichasQueNoMatanFijo.Any()
+                                            ? fichasQueNoMatanFijo.First()
+                                            : fichasValidas.First());
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            juego.JugarFicha(jugador, fichasValidas.First());
                         }
                     }
-
-                    if (!puedeJugar)
+                    else
+                    {
                         juego.PasarJuego(jugador);
+                    }
                 }
 
-                Trace.WriteLine("");
                 juego.DibujarTablero();
             }
         }
@@ -87,10 +133,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
 
             Assert.IsNotNull(juego);
@@ -99,10 +142,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void SePuedeJugarUnaFichaNueva()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6)); //Primera
             juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0)); //Segunda
@@ -113,15 +153,12 @@ namespace Csharp.Tests
         [TestMethod]
         public void SePuedeJugarUnaFichaYEspecificarElOrden()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
-            juego.JugarFicha(0, new Ficha(6,4));
-            juego.JugarFicha(1, new Ficha(4,0));
-            juego.JugarFicha(2, new Ficha(0,2));
-            juego.JugarFicha(3, new Ficha(2,6), 6);
+            juego.JugarFicha(0, new Ficha(6, 4));
+            juego.JugarFicha(1, new Ficha(4, 0));
+            juego.JugarFicha(2, new Ficha(0, 2));
+            juego.JugarFicha(3, new Ficha(2, 6), 6);
 
             Assert.IsTrue(juego.Fichas.First().Valor.A == 6 && juego.Fichas.Last().Valor.B == 6);
         }
@@ -130,10 +167,7 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void SoloSePuedeJugarMovidasValidas()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(4, 3));
@@ -144,10 +178,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void SeJuegaUnaRondaExitosamente()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0));
@@ -161,7 +192,6 @@ namespace Csharp.Tests
         public void DebenHaberCuatroJugadores()
         {
             var juego = new JuegoDomino();
-
             Assert.AreEqual(4, juego.Jugadores.Count, "No hay cuatro jugadores");
         }
 
@@ -181,9 +211,8 @@ namespace Csharp.Tests
         public void JugadorSoloPuedeJugarFichasQueTengaAsignadas()
         {
             var juego = new JuegoDomino();
-            var primerJugador = juego.Jugadores[0];
 
-            //Se sobrescriben las fichas asignadas a un usuario para la prueba
+            var primerJugador = juego.Jugadores[0];
             primerJugador.Fichas = new List<Ficha>
             {
                 new Ficha(1,1), new Ficha(0,2)
@@ -196,9 +225,8 @@ namespace Csharp.Tests
         [TestMethod]
         public void CuandoJugadorPoneUnaFichaSeDebeQuitarDeSuColeccion()
         {
-            var juego = new JuegoDomino();
-            juego.Jugadores[0] = new Jugador(6, 0, 6, 6, 5, 4, 4, 4, 1, 2, 3, 0, 2, 3);
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 0));
+            var juego = InicializarJuego();
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
 
             Assert.AreEqual(6, juego.Jugadores[0].Fichas.Count);
         }
@@ -207,10 +235,7 @@ namespace Csharp.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void JugadorSoloPuedeJugarSiEsSuTurno()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
             juego.JugarFicha(juego.Jugadores[0], new Ficha(4, 4));
@@ -219,10 +244,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void JugadorPuedePasar()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(3, 2));
@@ -236,10 +258,7 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void JugadorNoPuedePasarConFichasDisponibles()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(0, 6));
@@ -250,8 +269,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void SiUnJugadorSeQuedaSinFichasSeTerminaLaPartida()
         {
-            var juego = new JuegoDomino { Jugadores = InicializarJugadores() };
-
+            var juego = InicializarJuego();
             SimularJuego(juego);
 
             Assert.IsTrue(juego.TurnoActual == -1);
@@ -261,7 +279,7 @@ namespace Csharp.Tests
         [ExpectedException(typeof(Exception))]
         public void SiSeTerminaLaPartidaNosePuedeJugar()
         {
-            var juego = new JuegoDomino { Jugadores = InicializarJugadores() };
+            var juego = InicializarJuego();
             SimularJuego(juego);
 
             var otroJugadorConFichas = juego.Jugadores.First(f => f.Fichas.Any());
@@ -271,10 +289,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void ElJuegoCalculaElScoreDeQuienGano()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores()
-            };
+            var juego = InicializarJuego();
 
             var scoreOriginal = juego.Score.Select(f => f.Sum()).ToList();
             SimularJuego(juego);
@@ -287,12 +302,9 @@ namespace Csharp.Tests
         [TestMethod]
         public void ElJuegoDetectaCuandoHayUnTranque()
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadoresConTranque()
-            };
+            var juego = InicializarJuego(iniciarConTranque: true);
 
-            SimularJuego(juego);
+            SimularJuego(juego, 6);
 
             Assert.IsTrue(juego.TurnoActual == -1 && juego.Jugadores.Count(f => f.Fichas.Any()) == 4);
         }

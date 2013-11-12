@@ -2,7 +2,7 @@
 {
     public enum Frentes
     {
-        Equipo1 = 1,
-        Equipo2 = 2
+        Equipo1 = 0,
+        Equipo2 = 1
     }
 }

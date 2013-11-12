@@ -18,6 +18,8 @@ namespace Csharp
 
         public List<Int32>[] Score;
 
+        private int _numeroPases;
+
         private int _turnoActual;
         public int TurnoActual
         {
@@ -46,6 +48,7 @@ namespace Csharp
             Score[1] = new List<int> { 0 };
 
             _turnoActual = 0;
+            _numeroPases = 0;
 
             //Se crean todas las fichas posibles
             var fichasPosibles = new List<Ficha>();
@@ -94,8 +97,8 @@ namespace Csharp
 
             if (Fichas == null || Fichas.Count == 0)
             {
-                //Quiere decir que nunca se ha jugado. Se instancia la lista y comienza el juego
-                Fichas = new List<Ficha> { ficha };
+                //Quiere decir que nunca se ha jugado
+                Fichas.Add(ficha);
                 jugador.Fichas.Remove(ficha);
                 PasarTurno();
             }
@@ -109,10 +112,12 @@ namespace Csharp
                 //Se revisa si el jugador tiene intencion de un lado especifico
                 if (ladoPreferido.HasValue)
                 {
-                    if ((ficha.Valor.A != ExtremoIzq || ficha.Valor.B != ExtremoDer) &&
-                        (ficha.Valor.B != ExtremoIzq || ficha.Valor.A != ExtremoDer)) return;
-                    ProcesarJugada(jugador, ficha, ladoPreferido == ExtremoDer);
-                    return;
+                    if (ficha.Valor.A == ExtremoIzq && ficha.Valor.B == ExtremoDer ||
+                         ficha.Valor.B == ExtremoIzq && ficha.Valor.A == ExtremoDer)
+                    {
+                        ProcesarJugada(jugador, ficha, ladoPreferido == ExtremoDer);
+                        return;
+                    }
                 }
 
                 //De lo contrario se intenta colocar la ficha en el tablero, comenzando por el lado izquierdo
@@ -128,7 +133,7 @@ namespace Csharp
                 {
                     throw new Exception("Jugada Invalida!");
                 }
-                
+
             }
         }
 
@@ -149,6 +154,7 @@ namespace Csharp
                 Fichas.Add(ficha);
             }
 
+            _numeroPases = 0;
             jugador.Fichas.Remove(ficha);
             PasarTurno(jugador.Fichas.Count == 0);
         }
@@ -169,9 +175,24 @@ namespace Csharp
 
         private void CalcularScores()
         {
-            var frenteGanador = Jugadores.First(j => j.Fichas.Count == 0).Equipo;
-            var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
+            Frentes frenteGanador;
 
+            if (Jugadores.Any(j => j.Fichas.Count == 0))
+            {
+                //Quiere decir que un jugador dominó
+                frenteGanador = Jugadores.First(j => j.Fichas.Count == 0).Equipo;
+            }
+            else
+            {
+                //Quiere decir que hubo un tranque y se cuentan las fichas de cada equipo
+                var equipo1 = Jugadores.Where(f => f.Equipo == Frentes.Equipo1).Sum(j => j.Fichas.Sum(f => f.Puntos));
+                var equipo2 = Jugadores.Where(f => f.Equipo == Frentes.Equipo2).Sum(j => j.Fichas.Sum(f => f.Puntos));
+
+                frenteGanador = equipo1 < equipo2 ? Frentes.Equipo1 : Frentes.Equipo2;
+            }
+
+            //Una vez se tiene el ganador, se suman todas las fichas restantes y se asigna el puntaje
+            var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
             Score[(int)frenteGanador].Add(score);
         }
 
@@ -183,6 +204,8 @@ namespace Csharp
                 Trace.Write(f.Valor);
             }
 
+            Trace.WriteLine("");
+
             return "";
         }
 
@@ -191,14 +214,16 @@ namespace Csharp
             if (_turnoActual == -1)
                 throw new Exception("El partido ha terminado");
 
-            if (jugador != Jugadores[_turnoActual]) return;
+            if (jugador != Jugadores[_turnoActual])
+                return;
 
             if (jugador.Fichas.Any(ficha => Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha)))
             {
                 throw new Exception("El jugador no puede pasar con fichas");
             }
 
-            PasarTurno();
+            _numeroPases++;
+            PasarTurno(_numeroPases == 4);
         }
     }
 }
