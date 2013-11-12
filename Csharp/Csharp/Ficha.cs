@@ -77,6 +77,7 @@ namespace Csharp
                    Valor.B == fichaPropuesta.Valor.B;
         }
 
+
         public override string ToString()
         {
             return String.Format("[{0},{1}]", Valor.A, Valor.B);

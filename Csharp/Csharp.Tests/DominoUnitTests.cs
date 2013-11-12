@@ -108,6 +108,20 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
+        public void SePuedeJugarUnaFichaYEspecificarElOrden()
+        {
+            var juego = new JuegoDomino();
+            juego.Jugadores = InicializarJugadores();
+
+            juego.JugarFicha(0, new Ficha(6,4));
+            juego.JugarFicha(1, new Ficha(4,0));
+            juego.JugarFicha(2, new Ficha(0,2));
+            juego.JugarFicha(3, new Ficha(2,6), 6);
+
+            Assert.IsTrue(juego.Fichas.First().Valor.A == 6 && juego.Fichas.Last().Valor.B == 6);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void SoloSePuedeJugarMovidasValidas()
         {

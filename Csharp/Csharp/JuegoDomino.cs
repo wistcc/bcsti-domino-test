@@ -64,7 +64,13 @@ namespace Csharp
 
         }
 
-        public void JugarFicha(Jugador jugador, Ficha ficha)
+        public void JugarFicha(int numeroJugador, Ficha ficha, int? ladoPreferido = null)
+        {
+            if (numeroJugador >= 0 && numeroJugador < 4)
+                JugarFicha(Jugadores[numeroJugador], ficha, ladoPreferido);
+        }
+
+        public void JugarFicha(Jugador jugador, Ficha ficha, int? ladoPreferido = null)
         {
             if (_turnoActual == -1)
                 throw new Exception("El partido ha terminado");
@@ -87,6 +93,41 @@ namespace Csharp
                 if (Fichas.Any(f => f.Valor.Equals(ficha.Valor)))
                 {
                     throw new ArgumentException("No se puede jugar una ficha repetida");
+                }
+
+                //Se revisa si se quiere beneficiar un lado especifico
+                if (ladoPreferido.HasValue)
+                {
+                    //TODO: Abstraer
+                    var valorIzq = Fichas.First().Valor.A;
+                    var valorDer = Fichas.Last().Valor.B;
+
+                    if (ficha.Valor.A == valorIzq && ficha.Valor.B == valorDer ||
+                        ficha.Valor.B == valorIzq && ficha.Valor.A == valorDer)
+                    {
+                        //TODO: DRY THIS SHHH UP!
+                        if (ladoPreferido == valorIzq)
+                        {
+                            //se juega en el lado derecho
+                            if (Fichas.Last().Valor.B == ficha.Valor.B)
+                                ficha.Voltear();
+
+                            Fichas.Add(ficha);
+                            jugador.Fichas.Remove(ficha);
+                            PasarTurno(jugador.Fichas.Count == 0);
+                            return;
+                        }
+                        else
+                        {
+                            if (Fichas.First().Valor.A == ficha.Valor.A)
+                                ficha.Voltear();
+
+                            Fichas.Insert(0, ficha);
+                            jugador.Fichas.Remove(ficha);
+                            PasarTurno(jugador.Fichas.Count == 0);
+                            return;
+                        }
+                    }
                 }
 
                 //Se buscan los extremos jugados en el tablero
@@ -138,11 +179,6 @@ namespace Csharp
             Score[(int) frenteGanador].Add(score);
         }
 
-        public void JugarFicha(int numeroJugador, Ficha ficha)
-        {
-            if (numeroJugador >= 0 && numeroJugador < 4)
-                JugarFicha(Jugadores[numeroJugador], ficha);
-        }
 
         public string DibujarTablero()
         {
