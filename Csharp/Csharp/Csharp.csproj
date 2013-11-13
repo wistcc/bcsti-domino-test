@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Excepciones.cs" />
     <Compile Include="Ficha.cs" />
     <Compile Include="Frentes.cs" />
     <Compile Include="JuegoDomino.cs" />

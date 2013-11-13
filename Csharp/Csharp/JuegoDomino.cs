@@ -21,6 +21,7 @@ namespace Csharp
         private int _turnoActual; //A cual jugador le toca en el turno actual
         private int _ganadorPartidaAnterior; //Pesona que ganó la patrida anterior
         private bool _juegoTerminado; //Indica que el juego concluyo
+        private int _cantidadPartidasJugadas; //Indica cuantas partidas se han jugado
 
         //PROPIEDADES
         public List<Ficha> Fichas { get; set; }
@@ -53,21 +54,22 @@ namespace Csharp
 
         #region Métodos Públicos
 
-        public JuegoDomino()
+        public JuegoDomino(List<Jugador> jugadores = null)
         {
             Jugadores = new List<Jugador>();
             Fichas = new List<Ficha>();
             Score = new List<int>[2];
-            Score[0] = new List<int> {0};
-            Score[1] = new List<int> {0};
+            Score[0] = new List<int> { 0 };
+            Score[1] = new List<int> { 0 };
 
+            _cantidadPartidasJugadas = 0;
             _ganadorPartidaAnterior = 0;
             _juegoTerminado = false;
 
-            NuevaPartida();
+            NuevaPartida(jugadores);
         }
 
-        public void NuevaPartida()
+        public void NuevaPartida(List<Jugador> jugadores = null)
         {
             if (_juegoTerminado)
                 throw new Exception("No se puede comenzar otra partida, el juego ha terminado");
@@ -78,6 +80,21 @@ namespace Csharp
             _numeroPases = 0;
             _numeroJugadas = 0;
 
+            if (jugadores == null)
+                GenerarFichasAleatorias();
+            else
+                Jugadores = jugadores;
+
+            //Si es la primera partida, solo puede salir el doble seis
+            if (_cantidadPartidasJugadas == 0)
+            {
+                var primerJugador = Jugadores.First(f => f.Fichas.Contains(new Ficha(6, 6)));
+                _turnoActual = Jugadores.IndexOf(primerJugador);
+            }
+        }
+
+        private void GenerarFichasAleatorias()
+        {
             //Se crean todas las fichas posibles
             var fichasPosibles = new List<Ficha>();
             for (var i = 0; i < 7; i++)
@@ -92,14 +109,14 @@ namespace Csharp
 
             for (var i = 0; i < 4; i++)
             {
-                var equipo = i%2 == 0 ? 0 : 1;
+                var equipo = i % 2 == 0 ? 0 : 1;
                 var jugador = new Jugador
                 {
-                    Equipo = (Frentes) equipo
+                    Equipo = (Frentes)equipo
                 };
                 for (var j = 0; j < 7; j++)
                 {
-                    jugador.Fichas.Add(fichasPosibles[i*7 + j]);
+                    jugador.Fichas.Add(fichasPosibles[i * 7 + j]);
                 }
                 Jugadores.Add(jugador);
             }
@@ -117,14 +134,17 @@ namespace Csharp
                 throw new Exception("El partido ha terminado");
 
             if (jugador != Jugadores[_turnoActual])
-                throw new ArgumentException("El jugador no puede jugar si no es su turno");
+                throw new Excepciones.JugadorIntentoJugarEnTurnoErroneoException();
 
             if (!jugador.PoseeFicha(ficha))
-                throw new ArgumentException("El jugador no puede jugar con fichas que no posee");
+                throw new Excepciones.JugadorIntentoJugarFichaQueNoPoseeException();
 
             if (Fichas.Count == 0)
             {
                 //Quiere decir que nunca se ha jugado
+                if (_cantidadPartidasJugadas == 0 && !ficha.Equals(new Ficha(6, 6)))
+                    throw new Excepciones.JuegoNoComenzoConDobleSeisException();
+
                 Fichas.Add(ficha);
                 jugador.Fichas.Remove(ficha);
                 ManejarSiguienteTurno();
@@ -186,7 +206,7 @@ namespace Csharp
 
             if (jugador.Fichas.Any(ficha => Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha)))
             {
-                throw new Exception("El jugador no puede pasar con fichas");
+                throw new Excepciones.JugadorNoPuedePasarConFichasException();
             }
 
             _numeroPases++;
@@ -229,6 +249,7 @@ namespace Csharp
         {
             if (terminarPartida)
             {
+                _cantidadPartidasJugadas++;
                 _ganadorPartidaAnterior = _turnoActual;
                 _turnoActual = -1;
                 CalcularScores();
@@ -243,15 +264,15 @@ namespace Csharp
 
             //Primer pase tiene penalidad
             if (_numeroJugadas == 2 && Fichas.Count == 1)
-                Score[(int) Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra);
+                Score[(int)Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra);
 
             //PuntajeExtra no aplica si el frente también pasa
             if (_numeroJugadas == 3 && Fichas.Count == 1)
-                Score[(int) Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra*-1);
+                Score[(int)Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra * -1);
 
             //PuntajeExtra si tres jugadores pasan consecutivamente
             if (_numeroPases == 3)
-                Score[(int) Jugadores[_turnoActual].Equipo].Add(PuntajeExtra);
+                Score[(int)Jugadores[_turnoActual].Equipo].Add(PuntajeExtra);
 
         }
 
@@ -275,9 +296,9 @@ namespace Csharp
 
             //Una vez se tiene el ganador, se suman todas las fichas restantes y se asigna el puntaje
             var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
-            Score[(int) frenteGanador].Add(score);
+            Score[(int)frenteGanador].Add(score);
 
-            if (Score[(int) frenteGanador].Sum() >= 200)
+            if (Score[(int)frenteGanador].Sum() >= 200)
             {
                 _juegoTerminado = true;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Csharp.Excepciones;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Csharp.Tests
@@ -18,13 +19,11 @@ namespace Csharp.Tests
     {
         #region Helpers
 
-        private JuegoDomino InicializarJuego(int indiceJuegosPredisenados = 0)
+        private JuegoDomino InicializarJuego(int indiceJuegosPredisenados = 0, int? overwriteTurno = null)
         {
-            var juego = new JuegoDomino
-            {
-                Jugadores = InicializarJugadores(indiceJuegosPredisenados)
-            };
-
+            var jugadores = InicializarJugadores(indiceJuegosPredisenados);
+            var juego = new JuegoDomino(jugadores);
+            
             return juego;
         }
 
@@ -77,11 +76,12 @@ namespace Csharp.Tests
                    juego.Jugadores[3].Fichas.Count > 0 &&
                    juego.TurnoActual != -1)
             {
-                var jugador = juego.Jugadores[juego.TurnoActual];
+                var jugador = juego.Jugadores[juego.TurnoActual];       
 
                 if (juego.Fichas.Count == 0)
                 {
-                    juego.JugarFicha(jugador, jugador.Fichas[0]);
+                    juego.JugarFicha(jugador,
+                        jugador.Fichas.Contains(new Ficha(6, 6)) ? new Ficha(6, 6) : jugador.Fichas[0]);
                 }
                 else
                 {
@@ -146,7 +146,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
-            var juego = InicializarJuego();
+            var juego = InicializarJuego(overwriteTurno:0);
             juego.JugarFicha(0, new Ficha(6, 6));
 
             Assert.IsNotNull(juego);
@@ -231,32 +231,26 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(JugadorIntentoJugarFichaQueNoPoseeException))]
         public void JugadorSoloPuedeJugarFichasQueTengaAsignadas()
         {
-            var juego = new JuegoDomino();
+            var juego = InicializarJuego();
 
-            var primerJugador = juego.Jugadores[0];
-            primerJugador.Fichas = new List<Ficha>
-            {
-                new Ficha(1,1), new Ficha(0,2)
-            };
-
-            juego.JugarFicha(primerJugador, new Ficha(4, 5));
-
+            juego.JugarFicha(0, new Ficha(6,6));
+            juego.JugarFicha(1, new Ficha(6,6));
         }
 
         [TestMethod]
         public void CuandoJugadorPoneUnaFichaSeDebeQuitarDeSuColeccion()
         {
-            var juego = InicializarJuego();
+            var juego = InicializarJuego(overwriteTurno:0);
             juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
 
             Assert.AreEqual(6, juego.Jugadores[0].Fichas.Count);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(JugadorIntentoJugarEnTurnoErroneoException))]
         public void JugadorSoloPuedeJugarSiEsSuTurno()
         {
             var juego = InicializarJuego();
@@ -268,26 +262,21 @@ namespace Csharp.Tests
         [TestMethod]
         public void JugadorPuedePasar()
         {
-            var juego = InicializarJuego();
+            var juego = InicializarJuego(3);
 
-            juego.JugarFicha(0, new Ficha(3, 0));
-            juego.JugarFicha(1, new Ficha(3, 2));
-            juego.JugarFicha(2, new Ficha(2, 0));
-            juego.PasarTurno(3);
-
-            Assert.AreEqual(0, juego.TurnoActual);
+            juego.JugarFicha(0, new Ficha(6, 6));
+            juego.PasarTurno(1);
+            
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(Excepciones.JugadorNoPuedePasarConFichasException))]
         public void JugadorNoPuedePasarConFichasDisponibles()
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(0, new Ficha(3, 0));
-            juego.JugarFicha(1, new Ficha(0, 6));
-            juego.JugarFicha(2, new Ficha(6, 1));
-            juego.PasarTurno(3);
+            juego.JugarFicha(0, new Ficha(6, 6));
+            juego.PasarTurno(1);
         }
 
         [TestMethod]
@@ -362,13 +351,30 @@ namespace Csharp.Tests
             juego.NuevaPartida();
 
             Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0);
-            Assert.IsTrue(juego.TurnoActual == 1);
+            Assert.IsTrue(juego.TurnoActual == 0);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Excepciones.JuegoNoComenzoConDobleSeisException))]
         public void LaPrimeraPartidaDebeComenzarConDobleSeis()
         {
-            throw new NotImplementedException();
+            var juego = InicializarJuego(0);
+            juego.JugarFicha(0, new Ficha(6,4));
+        }
+
+        [TestMethod]
+        public void LaSegundaPartidaPuedeComenzarConCualquierFicha()
+        {
+            var juego = new JuegoDomino();
+            SimularJuego(juego); 
+
+            juego.NuevaPartida();
+            juego.Jugadores = InicializarJugadores(0);
+
+            juego.JugarFicha(juego.Jugadores[juego.TurnoActual], 
+                             juego.Jugadores[juego.TurnoActual].Fichas[0]);
+
+            Assert.AreEqual(1, juego.Fichas.Count);
         }
 
         [TestMethod]
