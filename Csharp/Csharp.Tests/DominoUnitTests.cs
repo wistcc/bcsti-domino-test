@@ -91,7 +91,7 @@ namespace Csharp.Tests
                             var turnoSiguiente = (juego.TurnoActual + 1 == 4) ? 0 : juego.TurnoActual + 1;
                             var equipoContrario = (int)juego.Jugadores[turnoSiguiente].Equipo;
 
-                            juego.Score[equipoContrario].Add(juego.Penalidad);
+                            juego.AgregarPenalidad(equipoContrario);
                         }
                         juego.PasarJuego(jugador);
                     }
@@ -345,9 +345,9 @@ namespace Csharp.Tests
             SimularJuego(juego);
 
             var scoreSinPenalidadDeLaPartida = juego.Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
+            var penalidad = 30;
 
-            Assert.IsTrue(scoreSinPenalidadDeLaPartida + juego.Penalidad == juego.Score[0].Sum()
-                          || scoreSinPenalidadDeLaPartida + juego.Penalidad == juego.Score[1].Sum());
+            Assert.IsTrue(scoreSinPenalidadDeLaPartida + penalidad == juego.Score[0].Sum());
         }
 
         public void PenalidadSegundoJugadorNoAplicaSiTerceroNoTiene()
