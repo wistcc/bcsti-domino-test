@@ -147,7 +147,7 @@ namespace Csharp.Tests
         public void DebePoderComenzarUnJuego()
         {
             var juego = InicializarJuego();
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
+            juego.JugarFicha(0, new Ficha(6, 6));
 
             Assert.IsNotNull(juego);
         }
@@ -157,8 +157,8 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6)); //Primera
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0)); //Segunda
+            juego.JugarFicha(0, new Ficha(6, 6)); //Primera
+            juego.JugarFicha(1, new Ficha(6, 0)); //Segunda
 
             Assert.IsTrue(juego.Fichas.Count > 1);
         }
@@ -182,8 +182,8 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(4, 3));
+            juego.JugarFicha(0, new Ficha(6, 6));
+            juego.JugarFicha(1, new Ficha(4, 3));
 
             Assert.IsTrue(juego.Fichas.Count == 1);
         }
@@ -193,10 +193,10 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(6, 0));
-            juego.JugarFicha(juego.Jugadores[2], new Ficha(0, 2));
-            juego.JugarFicha(juego.Jugadores[3], new Ficha(5, 2));
+            juego.JugarFicha(0, new Ficha(6, 6));
+            juego.JugarFicha(1, new Ficha(6, 0));
+            juego.JugarFicha(2, new Ficha(0, 2));
+            juego.JugarFicha(3, new Ficha(5, 2));
 
             Assert.AreEqual(4, juego.Fichas.Count);
         }
@@ -261,8 +261,8 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 6));
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(4, 4));
+            juego.JugarFicha(0, new Ficha(6, 6));
+            juego.JugarFicha(0, new Ficha(4, 4));
         }
 
         [TestMethod]
@@ -270,10 +270,10 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(3, 2));
-            juego.JugarFicha(juego.Jugadores[2], new Ficha(2, 0));
-            juego.PasarTurno(juego.Jugadores[3]);
+            juego.JugarFicha(0, new Ficha(3, 0));
+            juego.JugarFicha(1, new Ficha(3, 2));
+            juego.JugarFicha(2, new Ficha(2, 0));
+            juego.PasarTurno(3);
 
             Assert.AreEqual(0, juego.TurnoActual);
         }
@@ -284,10 +284,10 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
-            juego.JugarFicha(juego.Jugadores[1], new Ficha(0, 6));
-            juego.JugarFicha(juego.Jugadores[2], new Ficha(6, 1));
-            juego.PasarTurno(juego.Jugadores[3]);
+            juego.JugarFicha(0, new Ficha(3, 0));
+            juego.JugarFicha(1, new Ficha(0, 6));
+            juego.JugarFicha(2, new Ficha(6, 1));
+            juego.PasarTurno(3);
         }
 
         [TestMethod]
@@ -365,9 +365,10 @@ namespace Csharp.Tests
             Assert.IsTrue(juego.TurnoActual == 1);
         }
 
+        [TestMethod]
         public void LaPrimeraPartidaDebeComenzarConDobleSeis()
         {
-
+            throw new NotImplementedException();
         }
 
         [TestMethod]
@@ -404,8 +405,8 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego(2);
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6,1));
-            juego.PasarTurno(juego.Jugadores[1]);
+            juego.JugarFicha(0, new Ficha(6,1));
+            juego.PasarTurno(1);
 
             var equipoQueInicia = (int)juego.Jugadores[0].Equipo;
             Assert.IsTrue(juego.Score[equipoQueInicia].Sum() > 0);
@@ -416,9 +417,9 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego(2);
 
-            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 1));
-            juego.PasarTurno(juego.Jugadores[1]);
-            juego.PasarTurno(juego.Jugadores[2]);
+            juego.JugarFicha(0, new Ficha(6, 1));
+            juego.PasarTurno(1);
+            juego.PasarTurno(2);
 
             Assert.AreEqual(juego.Score[0].Sum(), juego.Score[1].Sum());
         }
@@ -437,7 +438,15 @@ namespace Csharp.Tests
             Assert.IsTrue(juego.Score[equipoQueInicia].Sum() > 0);
         }
 
+        [TestMethod]
         public void PuntosAdicionalesConKapikua()
-        { }
+        {
+            var juego = InicializarJuego(2);
+
+            SimularJuego(juego);
+
+            Assert.AreEqual(juego.Fichas.First().Valor.A, 
+                            juego.Fichas.Last().Valor.B);
+        }
     }
 }
