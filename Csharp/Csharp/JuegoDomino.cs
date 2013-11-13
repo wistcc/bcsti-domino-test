@@ -12,20 +12,22 @@ namespace Csharp
     {
         #region Propiedades
 
-        public List<Ficha> Fichas { get; set; }
+        //CONSTANTES
+        private const int PuntajeExtra = 25; //Cantidad otorgada en pases corridos, kapikua y otros
 
-        public List<Jugador> Jugadores { get; set; }
-
-        public List<Int32>[] Score;
-
+        //PRIVADAS
         private int _numeroPases; //Cantidd de veces que se pasa consecutivamente
         private int _numeroJugadas; //Contador de cada turno (global)
         private int _turnoActual; //A cual jugador le toca en el turno actual
         private int _ganadorPartidaAnterior; //Pesona que ganó la patrida anterior
         private bool _juegoTerminado; //Indica que el juego concluyo
 
-        //CONSTANTES
-        private const int PuntajeExtra = 25; //Cantidad otorgada en pases corridos, kapikua y otros
+        //PROPIEDADES
+        public List<Ficha> Fichas { get; set; }
+
+        public List<Jugador> Jugadores { get; set; }
+
+        public List<Int32>[] Score;
 
         public int TurnoActual
         {
@@ -49,15 +51,16 @@ namespace Csharp
 
         #endregion
 
+        #region Métodos Públicos
 
         public JuegoDomino()
         {
             Jugadores = new List<Jugador>();
             Fichas = new List<Ficha>();
             Score = new List<int>[2];
-            Score[0] = new List<int> { 0 };
-            Score[1] = new List<int> { 0 };
-            
+            Score[0] = new List<int> {0};
+            Score[1] = new List<int> {0};
+
             _ganadorPartidaAnterior = 0;
             _juegoTerminado = false;
 
@@ -86,17 +89,17 @@ namespace Csharp
             }
             //Se organizan las fichas aleatoriamente
             fichasPosibles = fichasPosibles.OrderBy(a => Guid.NewGuid()).ToList();
-            
+
             for (var i = 0; i < 4; i++)
             {
-                var equipo = i % 2 == 0 ? 0 : 1;
+                var equipo = i%2 == 0 ? 0 : 1;
                 var jugador = new Jugador
                 {
-                    Equipo = (Frentes)equipo
+                    Equipo = (Frentes) equipo
                 };
                 for (var j = 0; j < 7; j++)
                 {
-                    jugador.Fichas.Add(fichasPosibles[i * 7 + j]);
+                    jugador.Fichas.Add(fichasPosibles[i*7 + j]);
                 }
                 Jugadores.Add(jugador);
             }
@@ -137,7 +140,7 @@ namespace Csharp
                 if (ladoPreferido.HasValue)
                 {
                     if (ficha.Valor.A == ExtremoIzq && ficha.Valor.B == ExtremoDer ||
-                         ficha.Valor.B == ExtremoIzq && ficha.Valor.A == ExtremoDer)
+                        ficha.Valor.B == ExtremoIzq && ficha.Valor.A == ExtremoDer)
                     {
                         ProcesarJugada(jugador, ficha, ladoPreferido == ExtremoDer);
                         return;
@@ -160,6 +163,45 @@ namespace Csharp
 
             }
         }
+
+        public string DibujarTablero()
+        {
+            foreach (var f in Fichas)
+            {
+                Trace.Write(f.Valor);
+            }
+
+            Trace.WriteLine("");
+
+            return "";
+        }
+
+        public void PasarTurno(Jugador jugador)
+        {
+            if (_turnoActual == -1)
+                throw new Exception("El partido ha terminado"); //TODO: Deberiamos usar excepciones personalziadas?
+
+            if (jugador != Jugadores[_turnoActual])
+                return; //TODO: Esto debería tirar otra excepcion?
+
+            if (jugador.Fichas.Any(ficha => Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha)))
+            {
+                throw new Exception("El jugador no puede pasar con fichas");
+            }
+
+            _numeroPases++;
+            ManejarSiguienteTurno(_numeroPases == 4);
+        }
+
+        public void PasarTurno(int numeroJugador)
+        {
+            if (numeroJugador >= 0 && numeroJugador < 4)
+                PasarTurno(Jugadores[numeroJugador]);
+        }
+
+        #endregion
+
+        #region Métodos Privados
 
         private void ProcesarJugada(Jugador jugador, Ficha ficha, bool insertarEnExtremoIzq = false)
         {
@@ -201,15 +243,15 @@ namespace Csharp
 
             //Primer pase tiene penalidad
             if (_numeroJugadas == 2 && Fichas.Count == 1)
-                Score[(int)Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra);
+                Score[(int) Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra);
 
             //PuntajeExtra no aplica si el frente también pasa
             if (_numeroJugadas == 3 && Fichas.Count == 1)
-                Score[(int)Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra * -1);
+                Score[(int) Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra*-1);
 
             //PuntajeExtra si tres jugadores pasan consecutivamente
             if (_numeroPases == 3)
-                Score[(int)Jugadores[_turnoActual].Equipo].Add(PuntajeExtra);
+                Score[(int) Jugadores[_turnoActual].Equipo].Add(PuntajeExtra);
 
         }
 
@@ -233,7 +275,7 @@ namespace Csharp
 
             //Una vez se tiene el ganador, se suman todas las fichas restantes y se asigna el puntaje
             var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
-            Score[(int)frenteGanador].Add(score);
+            Score[(int) frenteGanador].Add(score);
 
             if (Score[(int) frenteGanador].Sum() >= 200)
             {
@@ -241,40 +283,7 @@ namespace Csharp
             }
         }
 
+        #endregion
 
-        public string DibujarTablero()
-        {
-            foreach (var f in Fichas)
-            {
-                Trace.Write(f.Valor);
-            }
-
-            Trace.WriteLine("");
-
-            return "";
-        }
-
-        public void PasarTurno(Jugador jugador)
-        {
-            if (_turnoActual == -1)
-                throw new Exception("El partido ha terminado"); //TODO: Deberiamos usar excepciones personalziadas?
-
-            if (jugador != Jugadores[_turnoActual])
-                return; //TODO: Esto debería tirar otra excepcion?
-
-            if (jugador.Fichas.Any(ficha => Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha)))
-            {
-                throw new Exception("El jugador no puede pasar con fichas");
-            }
-
-            _numeroPases++;
-            ManejarSiguienteTurno(_numeroPases == 4);
-        }
-
-        public void PasarTurno(int numeroJugador)
-        {
-            if (numeroJugador >= 0 && numeroJugador < 4)
-                PasarTurno(Jugadores[numeroJugador]);
-        }
     }
 }
