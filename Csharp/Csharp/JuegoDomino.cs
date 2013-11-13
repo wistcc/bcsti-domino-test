@@ -21,6 +21,9 @@ namespace Csharp
         private int _numeroPases;
 
         private int _turnoActual;
+
+        private int _ganadorPartidaAnterior;
+
         public int TurnoActual
         {
             get { return _turnoActual; }
@@ -46,6 +49,7 @@ namespace Csharp
             Score = new List<int>[2];
             Score[0] = new List<int> { 0 };
             Score[1] = new List<int> { 0 };
+            _ganadorPartidaAnterior = 0;
 
             NuevaPartida();
         }
@@ -53,7 +57,7 @@ namespace Csharp
         public void NuevaPartida()
         {
             Jugadores = new List<Jugador>();
-            _turnoActual = 0;
+            _turnoActual = _ganadorPartidaAnterior;
             _numeroPases = 0;
 
             //Se crean todas las fichas posibles
@@ -168,6 +172,7 @@ namespace Csharp
         {
             if (terminarPartida)
             {
+                _ganadorPartidaAnterior = _turnoActual;
                 _turnoActual = -1;
                 CalcularScores();
                 return;
