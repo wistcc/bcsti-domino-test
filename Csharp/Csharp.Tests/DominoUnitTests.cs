@@ -59,8 +59,8 @@ namespace Csharp.Tests
                 new List<Jugador>
                 {
                     new Jugador(6,0, 6,1, 6,2, 6,3, 6,4, 6,5, 6,6),
-                    new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1,5, 3,2),
-                    new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 4,4, 1,2),
+                    new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1,5, 1,2),
+                    new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 4,4, 3,2),
                     new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 0,4, 3,4)
                 },
             };
@@ -443,7 +443,7 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego(2);
 
-            SimularJuego(juego);
+            SimularJuego(juego, 3);
 
             Assert.AreEqual(juego.Fichas.First().Valor.A, 
                             juego.Fichas.Last().Valor.B);
