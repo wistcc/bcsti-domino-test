@@ -35,10 +35,14 @@ namespace Csharp
             get { return _turnoActual; }
         }
 
+<<<<<<< HEAD
+        private readonly int Penalidad;
+=======
         public bool JuegoTerminado
         {
             get { return _juegoTerminado; }
         }
+>>>>>>> ecbb2cf699d647c56500221e2ea7ae449dcca8c6
 
         private int ExtremoIzq
         {
@@ -61,6 +65,7 @@ namespace Csharp
             Score = new List<int>[2];
             Score[0] = new List<int> { 0 };
             Score[1] = new List<int> { 0 };
+            Penalidad = 30;
 
             _cantidadPartidasJugadas = 0;
             _ganadorPartidaAnterior = 0;
@@ -126,6 +131,11 @@ namespace Csharp
         {
             if (numeroJugador >= 0 && numeroJugador < 4)
                 JugarFicha(Jugadores[numeroJugador], ficha, ladoPreferido);
+        }
+
+        public void AgregarPenalidad(int equipoContrario)
+        {
+            Score[equipoContrario].Add(Penalidad);
         }
 
         public void JugarFicha(Jugador jugador, Ficha ficha, int? ladoPreferido = null)
