@@ -18,43 +18,56 @@ namespace Csharp.Tests
     {
         #region Helpers
 
-        private JuegoDomino InicializarJuego(bool iniciarConTranque = false)
+        private JuegoDomino InicializarJuego(int indiceJuegosPredisenados = 0)
         {
             var juego = new JuegoDomino
             {
-                Jugadores = iniciarConTranque
-                    ? InicializarJugadoresConTranque()
-                    : InicializarJugadores()
+                Jugadores = InicializarJugadores(indiceJuegosPredisenados)
             };
 
             return juego;
         }
 
-        private List<Jugador> InicializarJugadores()
+        private List<Jugador> InicializarJugadores(int set = 0)
         {
-            var list = new List<Jugador>
+            var conjuntos = new[]
             {
-                new Jugador(6,4, 6,6, 5,4, 4,4, 1,2, 3,0, 0,5),
-                new Jugador(3,4, 6,0, 0,0, 0,1, 5,6, 0,4, 3,2),
-                new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 1,5, 1,6),
-                new Jugador(2,2, 5,2, 2,6, 3,3, 3,5, 3,6, 5,5)
+                new List<Jugador>
+                {
+                    new Jugador(6,4, 6,6, 5,4, 4,4, 1,2, 3, 0, 0, 5),
+                    new Jugador(3,4, 6,0, 0,0, 0,1, 5,6, 0, 4, 3, 2),
+                    new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 1, 5, 1, 6),
+                    new Jugador(2,2, 5,2, 2,6, 3,3, 3,5, 3, 6, 5, 5)
+                },
+
+                new List<Jugador>
+                {
+                    new Jugador(6,0, 6,1, 6,2, 6,3, 2,0, 6, 5, 1, 2),
+                    new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1, 5, 3, 2),
+                    new Jugador(2,4, 6,4, 1,1, 1,3, 1,4, 4, 4, 6, 6),
+                    new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 0, 4, 3, 4)
+                },
+
+                new List<Jugador>
+                {
+                    new Jugador(6,0, 6,1, 6,2, 6,3, 2,0, 6,5, 1,2),
+                    new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 4,4, 3,2),
+                    new Jugador(2,2, 0,0, 2,4, 3,3, 3,0, 0,4, 3,4),
+                    new Jugador(0,1, 6,4, 1,1, 1,3, 1,4, 1,5, 6,6),
+                },
+
+                new List<Jugador>
+                {
+                    new Jugador(6,0, 6,1, 6,2, 6,3, 6,4, 6,5, 6,6),
+                    new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1,5, 3,2),
+                    new Jugador(2,4, 2,0, 1,1, 1,3, 1,4, 4,4, 1,2),
+                    new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 0,4, 3,4)
+                },
             };
 
-            return list;
+            return conjuntos[set];
         }
 
-        private List<Jugador> InicializarJugadoresConTranque()
-        {
-            var list = new List<Jugador>
-            {
-                new Jugador(6,0, 6,1, 6,2, 6,3, 2,0, 6,5, 1,2),
-                new Jugador(5,5, 5,0, 5,2, 5,4, 3,5, 1,5, 3,2),
-                new Jugador(2,4, 6,4, 1,1, 1,3, 1,4, 4,4, 6,6),
-                new Jugador(2,2, 0,0, 0,1, 3,3, 3,0, 0,4, 3,4)
-            };
-
-            return list;
-        }
 
         private void SimularJuego(JuegoDomino juego, int? preferenciaCuadre = null)
         {
@@ -119,7 +132,7 @@ namespace Csharp.Tests
                     }
                     else
                     {
-                        juego.PasarJuego(jugador);
+                        juego.PasarTurno(jugador);
                     }
                 }
 
@@ -260,7 +273,7 @@ namespace Csharp.Tests
             juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(3, 2));
             juego.JugarFicha(juego.Jugadores[2], new Ficha(2, 0));
-            juego.PasarJuego(juego.Jugadores[3]);
+            juego.PasarTurno(juego.Jugadores[3]);
 
             Assert.AreEqual(0, juego.TurnoActual);
         }
@@ -274,7 +287,7 @@ namespace Csharp.Tests
             juego.JugarFicha(juego.Jugadores[0], new Ficha(3, 0));
             juego.JugarFicha(juego.Jugadores[1], new Ficha(0, 6));
             juego.JugarFicha(juego.Jugadores[2], new Ficha(6, 1));
-            juego.PasarJuego(juego.Jugadores[3]);
+            juego.PasarTurno(juego.Jugadores[3]);
         }
 
         [TestMethod]
@@ -313,7 +326,7 @@ namespace Csharp.Tests
         [TestMethod]
         public void ElJuegoDetectaCuandoHayUnTranque()
         {
-            var juego = InicializarJuego(iniciarConTranque: true);
+            var juego = InicializarJuego(1);
             SimularJuego(juego, 6);
 
             Assert.IsTrue(juego.TurnoActual == -1 && juego.Jugadores.Count(f => f.Fichas.Any()) == 4);
@@ -322,12 +335,12 @@ namespace Csharp.Tests
         [TestMethod]
         public void SiHayUnTranqueElJuegoDecideElGanador()
         {
-            var juego = InicializarJuego(iniciarConTranque: true);
+            var juego = InicializarJuego(1);
             SimularJuego(juego, 6);
 
-            Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0); 
+            Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0);
         }
-        
+
         [TestMethod]
         public void SePuedeJugarMasDeUnaPartida()
         {
@@ -336,7 +349,7 @@ namespace Csharp.Tests
 
             juego.NuevaPartida();
 
-            Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0); 
+            Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0);
             Assert.IsTrue(juego.TurnoActual != -1);
         }
 
@@ -354,7 +367,7 @@ namespace Csharp.Tests
 
         public void LaPrimeraPartidaDebeComenzarConDobleSeis()
         {
-            
+
         }
 
         [TestMethod]
@@ -386,14 +399,43 @@ namespace Csharp.Tests
             juego.NuevaPartida();
         }
 
+        [TestMethod]
         public void PenalidadSiElSegundoJugadorNoTieneFichas()
-        { }
+        {
+            var juego = InicializarJuego(2);
 
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(6,1));
+            juego.PasarTurno(juego.Jugadores[1]);
+
+            var equipoQueInicia = (int)juego.Jugadores[0].Equipo;
+            Assert.IsTrue(juego.Score[equipoQueInicia].Sum() > 0);
+        }
+
+        [TestMethod]
         public void PenalidadSegundoJugadorNoAplicaSiTerceroNoTiene()
-        { }
+        {
+            var juego = InicializarJuego(2);
 
+            juego.JugarFicha(juego.Jugadores[0], new Ficha(6, 1));
+            juego.PasarTurno(juego.Jugadores[1]);
+            juego.PasarTurno(juego.Jugadores[2]);
+
+            Assert.AreEqual(juego.Score[0].Sum(), juego.Score[1].Sum());
+        }
+
+        [TestMethod]
         public void PenalidadSiTresJugadoresPasanConsecutivamente()
-        { }
+        {
+            var juego = InicializarJuego(3);
+
+            juego.JugarFicha(0, new Ficha(6,6));
+            juego.PasarTurno(1);
+            juego.PasarTurno(2);
+            juego.PasarTurno(3);
+
+            var equipoQueInicia = (int)juego.Jugadores[0].Equipo;
+            Assert.IsTrue(juego.Score[equipoQueInicia].Sum() > 0);
+        }
 
         public void PuntosAdicionalesConKapikua()
         { }

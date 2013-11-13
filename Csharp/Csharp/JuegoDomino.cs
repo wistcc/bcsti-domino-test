@@ -18,17 +18,20 @@ namespace Csharp
 
         public List<Int32>[] Score;
 
-        private int _numeroPases;
-        private int _turnoActual;
-        private int _ganadorPartidaAnterior;
+        private int _numeroPases; //Cantidd de veces que se pasa consecutivamente
+        private int _numeroJugadas; //Contador de cada turno (global)
+        private int _turnoActual; //A cual jugador le toca en el turno actual
+        private int _ganadorPartidaAnterior; //Pesona que ganó la patrida anterior
+        private bool _juegoTerminado; //Indica que el juego concluyo
+
+        //CONSTANTES
+        private const int PuntajeExtra = 25; //Cantidad otorgada en pases corridos, kapikua y otros
 
         public int TurnoActual
         {
             get { return _turnoActual; }
         }
 
-
-        private bool _juegoTerminado;
         public bool JuegoTerminado
         {
             get { return _juegoTerminado; }
@@ -70,6 +73,7 @@ namespace Csharp
             Fichas = new List<Ficha>();
             _turnoActual = _ganadorPartidaAnterior;
             _numeroPases = 0;
+            _numeroJugadas = 0;
 
             //Se crean todas las fichas posibles
             var fichasPosibles = new List<Ficha>();
@@ -115,12 +119,12 @@ namespace Csharp
             if (!jugador.PoseeFicha(ficha))
                 throw new ArgumentException("El jugador no puede jugar con fichas que no posee");
 
-            if (Fichas == null || Fichas.Count == 0)
+            if (Fichas.Count == 0)
             {
                 //Quiere decir que nunca se ha jugado
                 Fichas.Add(ficha);
                 jugador.Fichas.Remove(ficha);
-                PasarTurno();
+                ManejarSiguienteTurno();
             }
             else
             {
@@ -176,10 +180,10 @@ namespace Csharp
 
             _numeroPases = 0;
             jugador.Fichas.Remove(ficha);
-            PasarTurno(jugador.Fichas.Count == 0);
+            ManejarSiguienteTurno(jugador.Fichas.Count == 0);
         }
 
-        private void PasarTurno(bool terminarPartida = false)
+        private void ManejarSiguienteTurno(bool terminarPartida = false)
         {
             if (terminarPartida)
             {
@@ -189,9 +193,24 @@ namespace Csharp
                 return;
             }
 
+            _numeroJugadas++;
             _turnoActual++;
+
             if (_turnoActual == 4)
                 _turnoActual = 0;
+
+            //Primer pase tiene penalidad
+            if (_numeroJugadas == 2 && Fichas.Count == 1)
+                Score[(int)Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra);
+
+            //PuntajeExtra no aplica si el frente también pasa
+            if (_numeroJugadas == 3 && Fichas.Count == 1)
+                Score[(int)Jugadores[_ganadorPartidaAnterior].Equipo].Add(PuntajeExtra * -1);
+
+            //PuntajeExtra si tres jugadores pasan consecutivamente
+            if (_numeroPases == 3)
+                Score[(int)Jugadores[_turnoActual].Equipo].Add(PuntajeExtra);
+
         }
 
         private void CalcularScores()
@@ -235,13 +254,13 @@ namespace Csharp
             return "";
         }
 
-        public void PasarJuego(Jugador jugador)
+        public void PasarTurno(Jugador jugador)
         {
             if (_turnoActual == -1)
-                throw new Exception("El partido ha terminado");
+                throw new Exception("El partido ha terminado"); //TODO: Deberiamos usar excepciones personalziadas?
 
             if (jugador != Jugadores[_turnoActual])
-                return;
+                return; //TODO: Esto debería tirar otra excepcion?
 
             if (jugador.Fichas.Any(ficha => Fichas.First().PuedeJugarA(ficha) || Fichas.Last().PuedeJugarB(ficha)))
             {
@@ -249,7 +268,13 @@ namespace Csharp
             }
 
             _numeroPases++;
-            PasarTurno(_numeroPases == 4);
+            ManejarSiguienteTurno(_numeroPases == 4);
+        }
+
+        public void PasarTurno(int numeroJugador)
+        {
+            if (numeroJugador >= 0 && numeroJugador < 4)
+                PasarTurno(Jugadores[numeroJugador]);
         }
     }
 }
