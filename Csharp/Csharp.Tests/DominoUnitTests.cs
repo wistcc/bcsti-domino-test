@@ -142,7 +142,6 @@ namespace Csharp.Tests
 
         #endregion
 
-
         [TestMethod]
         public void DebePoderComenzarUnJuego()
         {
@@ -168,8 +167,8 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego();
 
-            juego.JugarFicha(0, new Ficha(6, 4));
-            juego.JugarFicha(1, new Ficha(4, 0));
+            juego.JugarFicha(0, new Ficha(6, 6));
+            juego.JugarFicha(1, new Ficha(6, 0));
             juego.JugarFicha(2, new Ficha(0, 2));
             juego.JugarFicha(3, new Ficha(2, 6), 6);
 
@@ -407,11 +406,11 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
-        public void PenalidadSiElSegundoJugadorNoTieneFichas()
+        public void PenalidadSiSegundoJugadorNoTieneFichas()
         {
-            var juego = InicializarJuego(2);
+            var juego = InicializarJuego(3);
 
-            juego.JugarFicha(0, new Ficha(6,1));
+            juego.JugarFicha(0, new Ficha(6,6));
             juego.PasarTurno(1);
 
             var equipoQueInicia = (int)juego.Jugadores[0].Equipo;
@@ -421,9 +420,9 @@ namespace Csharp.Tests
         [TestMethod]
         public void PenalidadSegundoJugadorNoAplicaSiTerceroNoTiene()
         {
-            var juego = InicializarJuego(2);
+            var juego = InicializarJuego(3);
 
-            juego.JugarFicha(0, new Ficha(6, 1));
+            juego.JugarFicha(0, new Ficha(6, 6));
             juego.PasarTurno(1);
             juego.PasarTurno(2);
 
@@ -449,10 +448,9 @@ namespace Csharp.Tests
         {
             var juego = InicializarJuego(2);
 
-            SimularJuego(juego, 3);
+            SimularJuego(juego, 2);
 
-            Assert.AreEqual(juego.Fichas.First().Valor.A, 
-                            juego.Fichas.Last().Valor.B);
+            Assert.AreEqual(juego.Fichas.First().Valor.A, juego.Fichas.Last().Valor.B);
         }
     }
 }
