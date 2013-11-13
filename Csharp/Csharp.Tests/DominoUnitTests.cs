@@ -316,9 +316,18 @@ namespace Csharp.Tests
 
             Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0); 
         }
-
+        
+        [TestMethod]
         public void SePuedeJugarMasDeUnaPartida()
-        { }
+        {
+            var juego = InicializarJuego();
+            SimularJuego(juego);
+
+            juego.NuevaPartida();
+
+            Assert.IsTrue(juego.Score.Sum(f => f.Sum(g => g)) > 0); 
+            Assert.IsTrue(juego.TurnoActual != -1);
+        }
 
         public void ElJugadorQueDominoLaPartidaAnteriorDebeComenzarLaSiguiente()
         { }

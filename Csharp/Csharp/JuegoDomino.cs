@@ -47,6 +47,12 @@ namespace Csharp
             Score[0] = new List<int> { 0 };
             Score[1] = new List<int> { 0 };
 
+            NuevaPartida();
+        }
+
+        public void NuevaPartida()
+        {
+            Jugadores = new List<Jugador>();
             _turnoActual = 0;
             _numeroPases = 0;
 
@@ -59,9 +65,9 @@ namespace Csharp
                     fichasPosibles.Add(new Ficha(i, j));
                 }
             }
-
-            //Se reparten entre los jugadores
+            //Se organizan las fichas aleatoriamente
             fichasPosibles = fichasPosibles.OrderBy(a => Guid.NewGuid()).ToList();
+            
             for (var i = 0; i < 4; i++)
             {
                 var equipo = i % 2 == 0 ? 1 : 2;
@@ -75,7 +81,6 @@ namespace Csharp
                 }
                 Jugadores.Add(jugador);
             }
-
         }
 
         public void JugarFicha(int numeroJugador, Ficha ficha, int? ladoPreferido = null)
