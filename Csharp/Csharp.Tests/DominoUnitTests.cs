@@ -196,6 +196,17 @@ namespace Csharp.Tests
         }
 
         [TestMethod]
+        public void LosEquiposDebenEstarOrganizadosEnFrentes()
+        {
+            var juego = new JuegoDomino();
+
+            Assert.AreEqual(Frentes.Equipo1, juego.Jugadores[0].Equipo);
+            Assert.AreEqual(Frentes.Equipo2, juego.Jugadores[1].Equipo);
+            Assert.AreEqual(Frentes.Equipo1, juego.Jugadores[2].Equipo);
+            Assert.AreEqual(Frentes.Equipo2, juego.Jugadores[3].Equipo);
+        }
+
+        [TestMethod]
         public void LosJugadoresTienenFichasAsignadasAlComenzarElJuego()
         {
             var juego = new JuegoDomino();
@@ -342,10 +353,26 @@ namespace Csharp.Tests
         }
 
         public void LaPrimeraPartidaDebeComenzarConDobleSeis()
-        { }
+        {
+            
+        }
 
+        [TestMethod]
         public void ElEquipoCon200PuntosGanaElJuego()
-        { }
+        {
+            var juego = new JuegoDomino();
+
+            while (!juego.Score.Any(j => j.Sum() >= 200))
+            {
+                SimularJuego(juego);
+                juego.NuevaPartida();
+            }
+
+            Assert.IsTrue(juego.JuegoTerminado);
+        }
+
+        public void SiElJuegoTerminoNosePuedeJugarOtraPartida()
+        {}
 
         public void PenalidadSiElSegundoJugadorNoTieneFichas()
         { }

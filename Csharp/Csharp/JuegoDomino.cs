@@ -19,14 +19,19 @@ namespace Csharp
         public List<Int32>[] Score;
 
         private int _numeroPases;
-
         private int _turnoActual;
-
         private int _ganadorPartidaAnterior;
 
         public int TurnoActual
         {
             get { return _turnoActual; }
+        }
+
+
+        private bool _juegoTerminado;
+        public bool JuegoTerminado
+        {
+            get { return _juegoTerminado; }
         }
 
         private int ExtremoIzq
@@ -49,7 +54,9 @@ namespace Csharp
             Score = new List<int>[2];
             Score[0] = new List<int> { 0 };
             Score[1] = new List<int> { 0 };
+            
             _ganadorPartidaAnterior = 0;
+            _juegoTerminado = false;
 
             NuevaPartida();
         }
@@ -57,6 +64,7 @@ namespace Csharp
         public void NuevaPartida()
         {
             Jugadores = new List<Jugador>();
+            Fichas = new List<Ficha>();
             _turnoActual = _ganadorPartidaAnterior;
             _numeroPases = 0;
 
@@ -74,7 +82,7 @@ namespace Csharp
             
             for (var i = 0; i < 4; i++)
             {
-                var equipo = i % 2 == 0 ? 1 : 2;
+                var equipo = i % 2 == 0 ? 0 : 1;
                 var jugador = new Jugador
                 {
                     Equipo = (Frentes)equipo
@@ -204,6 +212,11 @@ namespace Csharp
             //Una vez se tiene el ganador, se suman todas las fichas restantes y se asigna el puntaje
             var score = Jugadores.Sum(j => j.Fichas.Sum(f => f.Puntos));
             Score[(int)frenteGanador].Add(score);
+
+            if (Score[(int) frenteGanador].Sum() >= 200)
+            {
+                _juegoTerminado = true;
+            }
         }
 
 
