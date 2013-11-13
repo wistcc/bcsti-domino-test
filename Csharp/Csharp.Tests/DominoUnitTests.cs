@@ -364,8 +364,8 @@ namespace Csharp.Tests
 
             while (!juego.Score.Any(j => j.Sum() >= 200))
             {
-                SimularJuego(juego);
                 juego.NuevaPartida();
+                SimularJuego(juego);
             }
 
             Assert.IsTrue(juego.JuegoTerminado);
