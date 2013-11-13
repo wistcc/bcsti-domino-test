@@ -63,6 +63,9 @@ namespace Csharp
 
         public void NuevaPartida()
         {
+            if (_juegoTerminado)
+                throw new Exception("No se puede comenzar otra partida, el juego ha terminado");
+
             Jugadores = new List<Jugador>();
             Fichas = new List<Ficha>();
             _turnoActual = _ganadorPartidaAnterior;

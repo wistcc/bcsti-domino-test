@@ -371,8 +371,20 @@ namespace Csharp.Tests
             Assert.IsTrue(juego.JuegoTerminado);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void SiElJuegoTerminoNosePuedeJugarOtraPartida()
-        {}
+        {
+            var juego = new JuegoDomino();
+
+            while (!juego.Score.Any(j => j.Sum() >= 200))
+            {
+                SimularJuego(juego);
+                juego.NuevaPartida();
+            }
+
+            juego.NuevaPartida();
+        }
 
         public void PenalidadSiElSegundoJugadorNoTieneFichas()
         { }
